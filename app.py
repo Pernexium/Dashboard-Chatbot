@@ -25,7 +25,6 @@ warnings.filterwarnings("ignore")
 ######################################################################################################################
 
 
-st.set_option('deprecation.showPyplotGlobalUse', False)
 st.set_page_config(page_title = "Pernexium", page_icon = "./Varios/Logos/PXM isotipo 3.png", layout = "wide")
 
 
