@@ -1,0 +1,6 @@
+pytz
+tqdm
+boto3
+pandas
+plotly
+matplotlib
