@@ -16,7 +16,6 @@ import plotly.express as px
 from datetime import datetime
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
-from IPython.display import display
 from plotly.subplots import make_subplots
 
 import warnings
