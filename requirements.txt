@@ -4,3 +4,4 @@ boto3
 pandas
 plotly
 matplotlib
+streamlit==1.12.0
