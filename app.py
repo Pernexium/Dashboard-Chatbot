@@ -129,6 +129,7 @@ def obteniendo_df_general(bucket_name, prefix):
                 temp_item[it]['last_template_at'] = item['last_template_at']
                 temp_item[it]['tag'] = tag
                 temp_item[it]['send_status'] = item.get('status', 'sin_estatus')
+                temp_item[it]['product'] = item['product'] if 'product' in item.keys() else 'sin_producto'
             
             conversations.extend(temp_item)
 
@@ -200,301 +201,345 @@ def hash_password(password):
 
 def graficas(df, df_conversations, nombre):
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown(f"<h1>Dashboard del <span style='color: #27A3D7;'>Chatbot</span> de <span style='color: #27A3D7;'>{nombre}</span></h1>", unsafe_allow_html=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
+    st.markdown("<h1 style='font-size: 26px; color: white; text-align: left;'>FILTROS</h1>",unsafe_allow_html=True)   
+    
+    df_conversations['createdAt'] = pd.to_datetime(df_conversations['createdAt'])
+    df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_convert('UTC')
 
-    respuestas = 0
-    indexes_templates = np.where(df_conversations.content.str.contains("Template"))[0]
-    for index in range(len(indexes_templates) - 1):
-        if (indexes_templates[index + 1] - indexes_templates[index]) > 2:
-            respuestas += 1
 
-    ########## ENVIOS TOTALES ##########
-    envios_totales = df_conversations.query("content.str.contains('Template')").role.value_counts().sum()
-    envios_totales_formateado = "{:,}".format(envios_totales)
+    fecha_minima = pd.to_datetime(df_conversations['createdAt'].min())
+    fecha_maxima = pd.to_datetime(df_conversations['createdAt'].max())
 
-    ########## PORCENTAJE DE RESPUESTAS ##########
-    total_envios = df_conversations.query("content.str.contains('Template')").shape[0]
-    total_respuestas = df_conversations.query("direction == 'incoming'").shape[0]
+    rango_fechas = st.date_input(
+        "FECHA", 
+        value=(fecha_minima, fecha_maxima), 
+        min_value=fecha_minima, 
+        max_value=fecha_maxima
+    )
+    
+    productos_unicos = list(set(df['product'].unique()).union(set(df_conversations['product'].unique())))
 
-    if total_envios > 0: 
-        porcentaje_respuestas = round((total_respuestas / total_envios) * 100, 2)
-    else:
-        porcentaje_respuestas = 0
+    productos_seleccionados = st.multiselect(
+        "PRODUCTOS", 
+        options=productos_unicos,
+        default=productos_unicos 
+    )
+    
+    if not productos_seleccionados:
+        st.error("Por favor, selecciona al menos un producto.")
+        return
 
-    porcentaje_respuestas_str = f"{porcentaje_respuestas}%"
+    if isinstance(rango_fechas, tuple) and len(rango_fechas) == 2:
+        fecha_inicio = rango_fechas[0]
+        fecha_fin = rango_fechas[1]
+        
+        if fecha_inicio > fecha_fin:
+            st.error("La fecha de inicio no puede ser mayor que la fecha de fin")
+            return
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown(f"<h1>Dashboard del <span style='color: #27A3D7;'>Chatbot</span> de <span style='color: #27A3D7;'>{nombre}</span></h1>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-    ########## GASTOS DE META ##########
-    def obtener_tipo_cambio():
-        try:
-            response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
-            response.raise_for_status()  
-            data = response.json()
-            tipo_cambio_usd_mxn = data["rates"]["MXN"]
-            return tipo_cambio_usd_mxn
-        except requests.exceptions.RequestException as e:
-            print(f"Error al obtener el tipo de cambio: {e}")
-            return 19.33
+        df_conversations_filtered = df_conversations[
+            (df_conversations['createdAt'] >= pd.to_datetime(fecha_inicio)) &
+            (df_conversations['createdAt'] <= pd.to_datetime(fecha_fin)) &
+            (df_conversations['product'].isin(productos_seleccionados))
+        ]
 
-    def calcular_costo_por_mes(data):
-        fecha_actual = datetime.now()
-        mes = fecha_actual.month
-        año = fecha_actual.year
-        data['createdAt'] = pd.to_datetime(data['createdAt'])
-        mensajes_template = data[data['content'].str.contains('Template', na=False) & (data['sent_status_failed'] != True)]
-        mensajes_template_mes = mensajes_template[(mensajes_template['createdAt'].dt.month == mes) &
-                                                (mensajes_template['createdAt'].dt.year == año)]
-        total_envios_mes = mensajes_template_mes.shape[0]
+        df_filtered = df[
+            (df['created_at'] >= pd.to_datetime(fecha_inicio).tz_localize('UTC')) &
+            (df['created_at'] <= pd.to_datetime(fecha_fin).tz_localize('UTC')) &
+            (df['product'].isin(productos_seleccionados))
+        ]
+        
+        respuestas = 0
+        indexes_templates = np.where(df_conversations_filtered.content.str.contains("Template"))[0]
+        for index in range(len(indexes_templates) - 1):
+            if (indexes_templates[index + 1] - indexes_templates[index]) > 2:
+                respuestas += 1
+        
+        ###################################################### ENVIOS TOTALES ######################################################     
+        envios_totales = df_conversations_filtered.query("content.str.contains('Template')").role.value_counts().sum()
+        envios_totales_formateado = "{:,}".format(envios_totales)
+
+        ###################################################### PORCENTAJE DE RESPUESTAS ###################################################### 
+        total_envios = df_conversations_filtered.query("content.str.contains('Template')").shape[0]
+        total_respuestas = df_conversations_filtered.query("direction == 'incoming'").shape[0]
+
+        if total_envios > 0:
+            porcentaje_respuestas = round((total_respuestas / total_envios) * 100, 2)
+        else:
+            porcentaje_respuestas = 0
+
+        porcentaje_respuestas_str = f"{porcentaje_respuestas}%"
+
+        ###################################################### GASTOS DE META ###################################################### 
+        def obtener_tipo_cambio():
+            try:
+                response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
+                response.raise_for_status()
+                data = response.json()
+                tipo_cambio_usd_mxn = data["rates"]["MXN"]
+                return tipo_cambio_usd_mxn
+            except requests.exceptions.RequestException as e:
+                print(f"Error al obtener el tipo de cambio: {e}")
+                return 19.33
+
+        total_envios = df_conversations_filtered.query("content.str.contains('Template') and sent_status_failed == False").shape[0]
+
         tipo_cambio_usd_mxn = obtener_tipo_cambio()
         costo_usd_por_mensaje = 0.0436
         costo_mxn_por_mensaje = costo_usd_por_mensaje * tipo_cambio_usd_mxn
-        total_a_pagar_mxn = total_envios_mes * costo_mxn_por_mensaje
-        total_envios_mes_formateado = "{:,}".format(total_envios_mes)
+        total_a_pagar_mxn = total_envios * costo_mxn_por_mensaje
+
+        col1, col2, col3 = st.columns(3)
+
+        with col1:
+            st.markdown(
+                "<div style='text-align: center; color: #27A3D7; font-size: 25px; font-weight: bold;'>Envíos Totales</div>",
+                unsafe_allow_html=True)
+            st.markdown(f"<div style='text-align: center; font-size: 33px;'>{envios_totales_formateado}</div>", unsafe_allow_html=True)
+
+        with col2:
+            st.markdown(
+                "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>% Respuestas</div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(f"<div style='text-align: center; font-size: 33px;'>{porcentaje_respuestas_str}</div>", unsafe_allow_html=True)
+
+        with col3:
+            st.markdown(
+                "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>Gastos Meta</div>",
+                unsafe_allow_html=True
+            )
+            st.markdown(f"<div style='text-align: center; font-size: 33px;'>${total_a_pagar_mxn:,.0f} MXN</div>", unsafe_allow_html=True)
         
-        return total_envios_mes_formateado, total_a_pagar_mxn
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-    total_envios_mes_formateado, total_a_pagar_mxn = calcular_costo_por_mes(df_conversations)
+        ###################################################### DICTAMINACIONES GENERAL ###################################################### 
 
-    col1, col2, col3, col4 = st.columns(4)
+        tag_counts = df_conversations_filtered.query("content.str.contains('Template')").tag.value_counts()
 
-    with col1:
-        st.markdown(
-            "<div style='text-align: center; color: #27A3D7; font-size: 25px; font-weight: bold;'>Envíos Totales</div>",
-            unsafe_allow_html=True)
-        st.markdown(f"<div style='text-align: center; font-size: 33px;'>{envios_totales_formateado}</div>", unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(
-            "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>% Respuestas</div>",
-            unsafe_allow_html=True
+        fig = px.pie(
+            values=tag_counts.values,
+            names=tag_counts.index,
+            title='Dictaminaciones General',
+            width=850,
+            height=500,
+            hole=0.45
         )
-        st.markdown(f"<div style='text-align: center; font-size: 33px;'>{porcentaje_respuestas_str}</div>", unsafe_allow_html=True)
 
-    with col3:
-        st.markdown(
-            "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>Envíos del Mes</div>",
-            unsafe_allow_html=True
-        )
-        st.markdown(f"<div style='text-align: center; font-size: 33px;'>{total_envios_mes_formateado}</div>", unsafe_allow_html=True)
-
-    with col4:
-        st.markdown(
-            "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>Gastos Meta</div>",
-            unsafe_allow_html=True
-        )
-        st.markdown(f"<div style='text-align: center; font-size: 33px;'>${total_a_pagar_mxn:,.0f} MXN</div>", unsafe_allow_html=True)
-    
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    ########## DICTAMINACIONES GENERAL ##########
-    tag_counts = df_conversations.query("content.str.contains('Template')").tag.value_counts()
-
-    fig = px.pie(
-        values=tag_counts.values,
-        names=tag_counts.index,
-        title='Dictaminaciones General',
-        width=850,
-        height=500,
-        hole=0.45
-    )
-
-    fig.update_layout(
-        title={
-            'text': '<b>DICTAMINACIONES GENERAL</b>',
-            'font': {'size': 24, 'color': 'white'} 
-        },
-        legend={
-            'font': {'size': 14}
-        }
-    )
-
-    st.plotly_chart(fig)
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    ########## FUNEL DE ENVIOS ##########
-    filtered_data = df_conversations.query("content.str.contains('Template')")
-
-    response_count = total_respuestas
-    read_count = filtered_data['sent_status_read'].sum() 
-    delivered_count = filtered_data['sent_status_delivered'].sum() + read_count
-    sent_count = filtered_data['sent_status_sent'].sum() + read_count + delivered_count
-
-    values = [sent_count, delivered_count, read_count, response_count]
-    stages = ['<b>ENVÍADOS</b>', '<b>RECIBIDOS</b>', '<b>LEÍDOS</b>', '<b>RESPONDIDOS</b>']
-
-    colors = ['#636EFA', '#EF553B', '#00CC96', '#AB63FA']  
-
-    fig = go.Figure(go.Funnel(
-        y=stages,
-        x=values,
-        textinfo="value+percent initial",
-        marker=dict(color=colors) 
-    ))
-
-    fig.update_layout(
-        title={
-            'text': '<b>FUNEL DE ENVÍOS</b>',
-            'font': {'size': 24, 'color': 'white'}
-        },
-        width=1000,
-        height=600,
-        paper_bgcolor='rgba(0,0,0,0)',  
-        plot_bgcolor='rgba(0,0,0,0)',  
-        yaxis=dict(
-            title_font=dict(size=15),   
-            tickfont=dict(size=15)       
-        )
-    )
-
-    st.plotly_chart(fig)
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    ########## TABLA DE FILTROS ##########
-    st.markdown("<h3>TABLA DE FILTROS</h3>", unsafe_allow_html=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    ########## CANTIDAD DE RESPUESTAS ##########
-    dias_respuestas = []
-    for _, row in df.iterrows():
-        try:
-            if isinstance(row['messages'], str):
-                messages = json.loads(row['messages'])
-            elif isinstance(row['messages'], list):
-                messages = row['messages']
-            else:
-                continue 
-            
-            for message in messages:
-                if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
-                    created_at = message.get('createdAt')
-                    if created_at:
-                        adjusted_time = pd.to_datetime(created_at) - pd.Timedelta(hours=6)
-                        day_of_week = adjusted_time.day_name()
-                        dias_respuestas.append(day_of_week)
-
-        except (json.JSONDecodeError, TypeError) as e:
-            print(f"Error al procesar la fila: {e}")
-
-    dias_semana_espanol = {
-        "Monday": "Lunes",
-        "Tuesday": "Martes",
-        "Wednesday": "Miércoles",
-        "Thursday": "Jueves",
-        "Friday": "Viernes",
-        "Saturday": "Sábado",
-        "Sunday": "Domingo"
-    }
-
-    dias_respuestas_espanol = [dias_semana_espanol[day] for day in dias_respuestas]
-
-    df_dias_respuestas = pd.DataFrame(dias_respuestas_espanol, columns=['Día de la Semana'])
-
-    conteo_respuestas = df_dias_respuestas['Día de la Semana'].value_counts().reindex(
-        ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"], fill_value=0)
-
-    fig = px.bar(
-        conteo_respuestas, 
-        x=conteo_respuestas.index, 
-        y=conteo_respuestas.values,
-        labels={'x': 'Día de la Semana', 'y': 'Cantidad de Respuestas'},
-        title='<b>CANTIDAD DE RESPUESTAS</b>',
-        width=950, 
-        height=550,
-        text=conteo_respuestas.values
-    )
-
-    fig.update_traces(
-        marker_color='#27A3D7',  
-        marker_line_color='#27A3D7',  
-        marker_line_width=1.5, 
-        textposition='outside' 
-    )
-
-    fig.update_layout(
-        title={
-            'text': '<b>CANTIDAD DE RESPUESTAS</b>',
-            'font': {
-                'size': 24 
+        fig.update_layout(
+            title={
+                'text': '<b>DICTAMINACIONES GENERAL</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
+                'font': {'size': 24, 'color': 'white'} 
+            },
+            legend={
+                'font': {'size': 14}
             }
-        },
-        plot_bgcolor='rgba(0, 0, 0, 0)',  
-        paper_bgcolor='rgba(0, 0, 0, 0)', 
-        xaxis=dict(
-            linecolor='gray',  
-            gridcolor='rgba(0, 0, 0, 0)'   
-        ),
-        yaxis=dict(
-            linecolor='gray',  
-            gridcolor='gray'   
         )
-    )
 
-    st.plotly_chart(fig)
-    st.markdown("<hr>", unsafe_allow_html=True)
-    
-    ########## MAPA DE CALOR DE RESPUESTAS ##########
-    horas_dias_respuestas = []
-    timezone_cdmx = pytz.timezone('America/Mexico_City')
+        st.plotly_chart(fig)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        ###################################################### FUNEL DE ENVIOS ###################################################### 
+        filtered_data = df_conversations_filtered.query("content.str.contains('Template')")
 
-    for _, row in df.iterrows():
-        try:
-            if isinstance(row['messages'], str):
-                messages = json.loads(row['messages'])
-            elif isinstance(row['messages'], list):
-                messages = row['messages']
-            else:
-                continue 
-            
-            for message in messages:
-                if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
-                    created_at = message.get('createdAt')
-                    if created_at:
-                        dt = pd.to_datetime(created_at).tz_convert('UTC') 
-                        dt_cdmx = dt.tz_convert(timezone_cdmx)  
-                        day_of_week = dt_cdmx.strftime('%A')
-                        hour_of_day = dt_cdmx.hour
-                        horas_dias_respuestas.append((day_of_week, hour_of_day))
+        response_count = total_respuestas
+        read_count = filtered_data['sent_status_read'].sum() 
+        delivered_count = filtered_data['sent_status_delivered'].sum() + read_count
+        sent_count = filtered_data['sent_status_sent'].sum() + read_count + delivered_count
 
-        except (json.JSONDecodeError, TypeError) as e:
-            print(f"Error al procesar la fila: {e}")
+        values = [sent_count, delivered_count, read_count, response_count]
+        stages = ['<b>ENVÍADOS</b>', '<b>RECIBIDOS</b>', '<b>LEÍDOS</b>', '<b>RESPONDIDOS</b>']
 
-    df_horas_dias_respuestas = pd.DataFrame(horas_dias_respuestas, columns=['Día de la Semana', 'Hora del Día'])
+        colors = ['#636EFA', '#EF553B', '#00CC96', '#AB63FA']  
 
-    df_horas_dias_respuestas['Día de la Semana'] = df_horas_dias_respuestas['Día de la Semana'].replace({
-        'Monday': 'Lunes',
-        'Tuesday': 'Martes',
-        'Wednesday': 'Miércoles',
-        'Thursday': 'Jueves',
-        'Friday': 'Viernes',
-        'Saturday': 'Sábado',
-        'Sunday': 'Domingo'
-    })
+        fig = go.Figure(go.Funnel(
+            y=stages,
+            x=values,
+            textinfo="value+percent initial",
+            marker=dict(color=colors) 
+        ))
 
-    heatmap_data = df_horas_dias_respuestas.pivot_table(index='Día de la Semana', columns='Hora del Día', aggfunc='size', fill_value=0)
+        fig.update_layout(
+            title={
+                'text': '<b>FUNEL DE ENVÍOS</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
+                'font': {'size': 24, 'color': 'white'}
+            },
+            width=1000,
+            height=600,
+            paper_bgcolor='rgba(0,0,0,0)',  
+            plot_bgcolor='rgba(0,0,0,0)',  
+            yaxis=dict(
+                title_font=dict(size=15),   
+                tickfont=dict(size=15)       
+            )
+        )
 
-    heatmap_data = heatmap_data.reindex(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"])
-    
-    fig = px.imshow(
-        heatmap_data,
-        labels=dict(x="Hora del Día", y="Día de la Semana", color="Cantidad de Respuestas"),
-        x=heatmap_data.columns,
-        y=heatmap_data.index,
-        title="<b>MAPA DE CALOR DE RESPUESTAS</b>",
-        width=1000,
-        height=550
-    )
+        st.plotly_chart(fig)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        ###################################################### TABLA DE FILTROS ###################################################### 
+        st.markdown("<h1 style='font-size: 26px; color: white; text-align: center;'>TABLA DE FILTROS</h1>",unsafe_allow_html=True)
+        
+        st.write(df_conversations_filtered)
+        st.write(df_conversations_filtered.shape)
+        
+        st.markdown("<hr>", unsafe_allow_html=True)
 
-    fig.update_layout(
-        title={
-            'text': "<b>MAPA DE CALOR DE RESPUESTAS</b>",
-            'font': {
-                'size': 24 
-            }
+        ###################################################### CANTIDAD DE RESPUESTAS ###################################################### 
+        df_filtered['created_at'] = pd.to_datetime(df_filtered['created_at']).dt.tz_convert('UTC')
+        dias_respuestas = []
+        for _, row in df_filtered.iterrows():
+            try:
+                if isinstance(row['messages'], str):
+                    messages = json.loads(row['messages'])
+                elif isinstance(row['messages'], list):
+                    messages = row['messages']
+                else:
+                    continue 
+                
+                for message in messages:
+                    if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
+                        created_at = message.get('createdAt')
+                        if created_at:
+                            adjusted_time = pd.to_datetime(created_at) - pd.Timedelta(hours=6)
+                            day_of_week = adjusted_time.day_name()
+                            dias_respuestas.append(day_of_week)
+
+            except (json.JSONDecodeError, TypeError) as e:
+                print(f"Error al procesar la fila: {e}")
+
+        dias_semana_espanol = {
+            "Monday": "Lunes",
+            "Tuesday": "Martes",
+            "Wednesday": "Miércoles",
+            "Thursday": "Jueves",
+            "Friday": "Viernes",
+            "Saturday": "Sábado",
+            "Sunday": "Domingo"
         }
-    )
 
-    st.plotly_chart(fig)
-    st.markdown("<hr>", unsafe_allow_html=True)
+        dias_respuestas_espanol = [dias_semana_espanol[day] for day in dias_respuestas]
+
+        df_dias_respuestas = pd.DataFrame(dias_respuestas_espanol, columns=['Día de la Semana'])
+
+        conteo_respuestas = df_dias_respuestas['Día de la Semana'].value_counts().reindex(
+            ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"], fill_value=0)
+
+        fig = px.bar(
+            conteo_respuestas, 
+            x=conteo_respuestas.index, 
+            y=conteo_respuestas.values,
+            labels={'x': 'Día de la Semana', 'y': 'Cantidad de Respuestas'},
+            title='<b>CANTIDAD DE RESPUESTAS</b>',
+            width=950, 
+            height=550,
+            text=conteo_respuestas.values
+        )
+
+        fig.update_traces(
+            marker_color='#27A3D7',  
+            marker_line_color='#27A3D7',  
+            marker_line_width=1.5, 
+            textposition='outside' 
+        )
+
+        fig.update_layout(
+            title={
+                'text': '<b>CANTIDAD DE RESPUESTAS</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
+                'font': {
+                    'size': 24 
+                }
+            },
+            plot_bgcolor='rgba(0, 0, 0, 0)',  
+            paper_bgcolor='rgba(0, 0, 0, 0)', 
+            xaxis=dict(
+                linecolor='gray',  
+                gridcolor='rgba(0, 0, 0, 0)'   
+            ),
+            yaxis=dict(
+                linecolor='gray',  
+                gridcolor='gray'   
+            )
+        )
+
+        st.plotly_chart(fig)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        ###################################################### MAPA DE CALOR DE RESPUESTAS ###################################################### 
+        horas_dias_respuestas = []
+        timezone_cdmx = pytz.timezone('America/Mexico_City')
+
+        for _, row in df_filtered.iterrows():
+            try:
+                if isinstance(row['messages'], str):
+                    messages = json.loads(row['messages'])
+                elif isinstance(row['messages'], list):
+                    messages = row['messages']
+                else:
+                    continue 
+                
+                for message in messages:
+                    if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
+                        created_at = message.get('createdAt')
+                        if created_at:
+                            dt = pd.to_datetime(created_at).tz_convert('UTC') 
+                            dt_cdmx = dt.tz_convert(timezone_cdmx)  
+                            day_of_week = dt_cdmx.strftime('%A')
+                            hour_of_day = dt_cdmx.hour
+                            horas_dias_respuestas.append((day_of_week, hour_of_day))
+
+            except (json.JSONDecodeError, TypeError) as e:
+                print(f"Error al procesar la fila: {e}")
+
+        df_horas_dias_respuestas = pd.DataFrame(horas_dias_respuestas, columns=['Día de la Semana', 'Hora del Día'])
+
+        df_horas_dias_respuestas['Día de la Semana'] = df_horas_dias_respuestas['Día de la Semana'].replace({
+            'Monday': 'Lunes',
+            'Tuesday': 'Martes',
+            'Wednesday': 'Miércoles',
+            'Thursday': 'Jueves',
+            'Friday': 'Viernes',
+            'Saturday': 'Sábado',
+            'Sunday': 'Domingo'
+        })
+
+        heatmap_data = df_horas_dias_respuestas.pivot_table(index='Día de la Semana', columns='Hora del Día', aggfunc='size', fill_value=0)
+
+        heatmap_data = heatmap_data.reindex(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"])
+        
+        fig = px.imshow(
+            heatmap_data,
+            labels=dict(x="Hora del Día", y="Día de la Semana", color="Cantidad de Respuestas"),
+            x=heatmap_data.columns,
+            y=heatmap_data.index,
+            title="<b>MAPA DE CALOR DE RESPUESTAS</b>",
+            width=1000,
+            height=550
+        )
+        
+        fig.update_layout(
+            title={
+                'text': '<b>MAPA DE CALOR DE RESPUESTAS</b><br><span style="font-size: 14px;">'
+                        f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
+                'font': {
+                    'size': 24
+                }
+            }
+        )
+
+        st.plotly_chart(fig)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        ###################################################### MAPA DE MEXICO ###################################################### 
+        st.markdown("<h1 style='font-size: 26px; color: white; text-align: center;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)
+
+    else:
+        st.error("Por favor, selecciona una fecha de inicio y una fecha de fin válidas.")
+
 
     
 ######################################################################################################################    
