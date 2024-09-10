@@ -201,7 +201,7 @@ def hash_password(password):
 
 def graficas(df, df_conversations, nombre):
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.markdown("<h1 style='font-size: 26px; color: white; text-align: left;'>FILTROS</h1>",unsafe_allow_html=True)   
+    st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS</h1>",unsafe_allow_html=True)   
     
     df_conversations['createdAt'] = pd.to_datetime(df_conversations['createdAt'])
     df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_convert('UTC')
@@ -238,7 +238,7 @@ def graficas(df, df_conversations, nombre):
             return
         
         st.markdown("<hr>", unsafe_allow_html=True)
-        st.markdown(f"<h1>Dashboard del <span style='color: #27A3D7;'>Chatbot</span> de <span style='color: #27A3D7;'>{nombre}</span></h1>", unsafe_allow_html=True)
+        st.markdown(f"<h1>Dashboard del <span style='color: #145CB3;'>Chatbot</span> de <span style='color: #145CB3;'>{nombre}</span></h1>", unsafe_allow_html=True)
         st.markdown("<hr>", unsafe_allow_html=True)
 
         df_conversations_filtered = df_conversations[
@@ -297,20 +297,20 @@ def graficas(df, df_conversations, nombre):
 
         with col1:
             st.markdown(
-                "<div style='text-align: center; color: #27A3D7; font-size: 25px; font-weight: bold;'>Envíos Totales</div>",
+                "<div style='text-align: center; color: #145CB3; font-size: 25px; font-weight: bold;'>Envíos Totales</div>",
                 unsafe_allow_html=True)
             st.markdown(f"<div style='text-align: center; font-size: 33px;'>{envios_totales_formateado}</div>", unsafe_allow_html=True)
 
         with col2:
             st.markdown(
-                "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>% Respuestas</div>",
+                "<div style='text-align: center; color: #145CB3; font-size: 24px; font-weight: bold;'>% Respuestas</div>",
                 unsafe_allow_html=True
             )
             st.markdown(f"<div style='text-align: center; font-size: 33px;'>{porcentaje_respuestas_str}</div>", unsafe_allow_html=True)
 
         with col3:
             st.markdown(
-                "<div style='text-align: center; color: #27A3D7; font-size: 24px; font-weight: bold;'>Gastos Meta</div>",
+                "<div style='text-align: center; color: #145CB3; font-size: 24px; font-weight: bold;'>Gastos Meta</div>",
                 unsafe_allow_html=True
             )
             st.markdown(f"<div style='text-align: center; font-size: 33px;'>${total_a_pagar_mxn:,.0f} MXN</div>", unsafe_allow_html=True)
@@ -333,7 +333,7 @@ def graficas(df, df_conversations, nombre):
         fig.update_layout(
             title={
                 'text': '<b>DICTAMINACIONES GENERAL</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
-                'font': {'size': 24, 'color': 'white'} 
+                'font': {'size': 24, 'color': 'black'} 
             },
             legend={
                 'font': {'size': 14}
@@ -366,7 +366,7 @@ def graficas(df, df_conversations, nombre):
         fig.update_layout(
             title={
                 'text': '<b>FUNEL DE ENVÍOS</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
-                'font': {'size': 24, 'color': 'white'}
+                'font': {'size': 24, 'color': 'black'}
             },
             width=1000,
             height=600,
@@ -382,7 +382,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
         
         ###################################################### TABLA DE FILTROS ###################################################### 
-        st.markdown("<h1 style='font-size: 26px; color: white; text-align: center;'>TABLA DE FILTROS</h1>",unsafe_allow_html=True)
+        st.markdown("<h1 style='font-size: 26px; color: black; text-align: center;'>TABLA DE FILTROS</h1>",unsafe_allow_html=True)
         
         st.write(df_conversations_filtered)
         st.write(df_conversations_filtered.shape)
@@ -441,8 +441,8 @@ def graficas(df, df_conversations, nombre):
         )
 
         fig.update_traces(
-            marker_color='#27A3D7',  
-            marker_line_color='#27A3D7',  
+            marker_color='#145CB3',  
+            marker_line_color='#145CB3',  
             marker_line_width=1.5, 
             textposition='outside' 
         )
@@ -610,14 +610,14 @@ def cargar_base_datos(rol):
    
 
 def main():
-    st.sidebar.image("./Varios/Logos/logo.png", width=185)
-    image_path = "./Varios/Logos/PXM Imagotipo 3.png"
+    # st.sidebar.image("./Varios/Logos/logo.png", width=185)
+    image_path = "./Varios/Logos/PXM Imagotipo 2.png"
     
     with open(image_path, "rb") as image_file:
         encoded_image = base64.b64encode(image_file.read()).decode()
 
-    st.markdown(f"""<img src="data:image/png;base64,{encoded_image}" width="60%">""", unsafe_allow_html=True)
-    st.markdown("<h1>Dashboard del <span style='color: #27A3D7;'>Chatbot</span></h1>", unsafe_allow_html=True)
+    st.markdown(f"""<img src="data:image/png;base64,{encoded_image}" width="45%">""", unsafe_allow_html=True)
+    st.markdown("<h1>Dashboard del <span style='color: #145CB3;'>Chatbot</span></h1>", unsafe_allow_html=True)
     
     passwords, roles = load_secrets()
     
@@ -647,37 +647,37 @@ def main():
         dashboard_page()
 
 
-    st.sidebar.markdown("---")
+    # st.sidebar.markdown("---")
 
-    st.sidebar.markdown("### Contacto")
-    st.sidebar.markdown(
-     """
-     @Pernexium<br>
-     <div style="display:flex; align-items:center; gap:10px;">
-         <a href="https://www.pernexium.com/" style="display:flex; align-items:center; margin-right:15px; margin-left:85px;">
-            <div style="background-color:white; width:30px; height:30px; display:flex; justify-content:center; align-items:center; border-radius:50%;">
-                <img src="https://www.svgrepo.com/show/438256/world-round.svg" alt="Web Page" style="width:45px; height:45px;">
-            </div>
-         </a>
-         <a href="https://www.instagram.com/pernexium/" style="display:flex; align-items:center; margin-right:15px;">
-            <div style="background-color:white; width:30px; height:30px; display:flex; justify-content:center; align-items:center; border-radius:50%;">
-                 <img src="https://www.svgrepo.com/show/494277/instagram-round.svg" alt="Instagram" style="width:40px; height:40px;">
-            </div>
-         </a>
-        <a href="https://www.linkedin.com/company/pernexium/" style="display:flex; align-items:center;">
-            <div style="background-color:white; width:30px; height:30px; display:flex; justify-content:center; align-items:center; border-radius:50%;">
-                <img src="https://www.svgrepo.com/show/494278/linkedin-round.svg" alt="LinkedIn" style="width:40px; height:40px;">
-            </div>
-        </a>
+    # st.sidebar.markdown("### Contacto")
+    # st.sidebar.markdown(
+    #  """
+    #  @Pernexium<br>
+    #  <div style="display:flex; align-items:center; gap:10px;">
+    #      <a href="https://www.pernexium.com/" style="display:flex; align-items:center; margin-right:15px; margin-left:85px;">
+    #         <div style="background-color:white; width:30px; height:30px; display:flex; justify-content:center; align-items:center; border-radius:50%;">
+    #             <img src="https://www.svgrepo.com/show/438256/world-round.svg" alt="Web Page" style="width:45px; height:45px;">
+    #         </div>
+    #      </a>
+    #      <a href="https://www.instagram.com/pernexium/" style="display:flex; align-items:center; margin-right:15px;">
+    #         <div style="background-color:white; width:30px; height:30px; display:flex; justify-content:center; align-items:center; border-radius:50%;">
+    #              <img src="https://www.svgrepo.com/show/494277/instagram-round.svg" alt="Instagram" style="width:40px; height:40px;">
+    #         </div>
+    #      </a>
+    #     <a href="https://www.linkedin.com/company/pernexium/" style="display:flex; align-items:center;">
+    #         <div style="background-color:white; width:30px; height:30px; display:flex; justify-content:center; align-items:center; border-radius:50%;">
+    #             <img src="https://www.svgrepo.com/show/494278/linkedin-round.svg" alt="LinkedIn" style="width:40px; height:40px;">
+    #         </div>
+    #     </a>
 
-     </div>
-     """,
-     unsafe_allow_html=True)
+    #  </div>
+    #  """,
+    #  unsafe_allow_html=True)
 
-    st.sidebar.markdown("---")
-    st.sidebar.markdown(
-        '<p style="color: grey;">© 2024 Pernexium.</p>', 
-        unsafe_allow_html=True)
+    # st.sidebar.markdown("---")
+    # st.sidebar.markdown(
+    #     '<p style="color: grey;">© 2024 Pernexium.</p>', 
+    #     unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main()
