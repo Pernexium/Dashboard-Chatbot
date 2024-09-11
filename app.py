@@ -206,13 +206,14 @@ def graficas(df, df_conversations, nombre):
     df_conversations['createdAt'] = pd.to_datetime(df_conversations['createdAt'])
     df['created_at'] = pd.to_datetime(df['created_at']).dt.tz_convert('UTC')
 
-
     fecha_minima = pd.to_datetime(df_conversations['createdAt'].min())
     fecha_maxima = pd.to_datetime(df_conversations['createdAt'].max())
 
+    primer_dia_mes_actual = pd.Timestamp.today().replace(day=1)
+
     rango_fechas = st.date_input(
         "FECHA", 
-        value=(fecha_minima, fecha_maxima), 
+        value=(primer_dia_mes_actual, fecha_maxima), 
         min_value=fecha_minima, 
         max_value=fecha_maxima
     )
