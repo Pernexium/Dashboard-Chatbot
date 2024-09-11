@@ -553,7 +553,7 @@ def graficas(df, df_conversations, nombre):
             x=heatmap_data.columns,
             y=heatmap_data.index,
             title="<b>MAPA DE CALOR DE RESPUESTAS</b>",
-            width=1250,
+            width=1300,
             height=600,
             color_continuous_scale=[(0, '#145CB3'), (1, 'white')]
         )
