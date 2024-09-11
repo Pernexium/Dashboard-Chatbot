@@ -24,7 +24,6 @@ warnings.filterwarnings("ignore")
 
 ######################################################################################################################
 
-
 st.set_page_config(page_title = "Pernexium", page_icon = "./Varios/Logos/PXM isotipo 3.png", layout = "wide")
 
 
@@ -319,27 +318,45 @@ def graficas(df, df_conversations, nombre):
 
         ###################################################### DICTAMINACIONES GENERAL ###################################################### 
 
+        color_palette = ['#145CB3', '#1C6AD1', '#2682EF', '#3A98F7', '#5BB4FC', '#7DD0FF', '#A0E6FF']
+
         tag_counts = df_conversations_filtered.query("content.str.contains('Template')").tag.value_counts()
 
         fig = px.pie(
             values=tag_counts.values,
             names=tag_counts.index,
             title='Dictaminaciones General',
-            width=850,
-            height=500,
-            hole=0.45
+            color_discrete_sequence=color_palette,
+            width=1300,
+            height=650,
+            hole=0.40
+        )
+        
+        fig.update_traces(
+            textinfo='percent', 
+            textfont_size=15, 
+            textfont_color='white', 
+            hovertemplate='%{label}: %{value:,.0f}'
         )
 
         fig.update_layout(
             title={
                 'text': '<b>DICTAMINACIONES GENERAL</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
-                'font': {'size': 24, 'color': 'black'} 
+                'font': {'size': 29, 'color': 'black'}
             },
             legend={
-                'font': {'size': 14}
-            }
+                'font': {'size': 16},
+                'orientation': 'h', 
+                'yanchor': 'top', 
+                'y': -0.25, 
+                'xanchor': 'center', 
+                'x': 0.5, 
+                'title_text': '',
+                'itemwidth': 100 
+            },
+            legend_tracegroupgap=5 
         )
-
+        
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
         
@@ -354,27 +371,32 @@ def graficas(df, df_conversations, nombre):
         values = [sent_count, delivered_count, read_count, response_count]
         stages = ['<b>ENVÍADOS</b>', '<b>RECIBIDOS</b>', '<b>LEÍDOS</b>', '<b>RESPONDIDOS</b>']
 
-        colors = ['#636EFA', '#EF553B', '#00CC96', '#AB63FA']  
+        colors = ['#145CB3', '#1C6AD1', '#2682EF', '#5BB4FC']
 
         fig = go.Figure(go.Funnel(
             y=stages,
             x=values,
-            textinfo="value+percent initial",
-            marker=dict(color=colors) 
+            marker=dict(color=colors),
+            texttemplate='%{percentInitial:.1%}<br><span style="font-size:14px">%{value:,.0f}</span>',
+            textfont=dict(
+                size=18, 
+                color='white'
+            )
         ))
+
 
         fig.update_layout(
             title={
                 'text': '<b>FUNEL DE ENVÍOS</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
-                'font': {'size': 24, 'color': 'black'}
+                'font': {'size': 29, 'color': 'black'}
             },
-            width=1000,
+            width=1300,
             height=600,
             paper_bgcolor='rgba(0,0,0,0)',  
             plot_bgcolor='rgba(0,0,0,0)',  
             yaxis=dict(
-                title_font=dict(size=15),   
-                tickfont=dict(size=15)       
+                title_font=dict(size=17),   
+                tickfont=dict(size=17)       
             )
         )
 
@@ -382,7 +404,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
         
         ###################################################### TABLA DE FILTROS ###################################################### 
-        st.markdown("<h1 style='font-size: 26px; color: black; text-align: center;'>TABLA DE FILTROS</h1>",unsafe_allow_html=True)
+        st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>TABLA DE FILTROS</h1>",unsafe_allow_html=True)
         
         st.write(df_conversations_filtered)
         st.write(df_conversations_filtered.shape)
@@ -435,7 +457,7 @@ def graficas(df, df_conversations, nombre):
             y=conteo_respuestas.values,
             labels={'x': 'Día de la Semana', 'y': 'Cantidad de Respuestas'},
             title='<b>CANTIDAD DE RESPUESTAS</b>',
-            width=950, 
+            width=1300, 
             height=550,
             text=conteo_respuestas.values
         )
@@ -444,25 +466,40 @@ def graficas(df, df_conversations, nombre):
             marker_color='#145CB3',  
             marker_line_color='#145CB3',  
             marker_line_width=1.5, 
-            textposition='outside' 
+            textposition='outside',  
+            textfont=dict(
+                size=14  
+            )
         )
 
         fig.update_layout(
             title={
                 'text': '<b>CANTIDAD DE RESPUESTAS</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
                 'font': {
-                    'size': 24 
+                    'size': 29
                 }
             },
             plot_bgcolor='rgba(0, 0, 0, 0)',  
             paper_bgcolor='rgba(0, 0, 0, 0)', 
             xaxis=dict(
                 linecolor='gray',  
-                gridcolor='rgba(0, 0, 0, 0)'   
+                gridcolor='rgba(0, 0, 0, 0)',
+                tickfont=dict(
+                    size=15 
+                ),
+                titlefont=dict(
+                    size=18 
+                )
             ),
             yaxis=dict(
                 linecolor='gray',  
-                gridcolor='gray'   
+                gridcolor='gray',
+                tickfont=dict(
+                    size=15 
+                ),
+                titlefont=dict(
+                    size=18 
+                )
             )
         )
 
@@ -510,30 +547,38 @@ def graficas(df, df_conversations, nombre):
         heatmap_data = df_horas_dias_respuestas.pivot_table(index='Día de la Semana', columns='Hora del Día', aggfunc='size', fill_value=0)
 
         heatmap_data = heatmap_data.reindex(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"])
-        
         fig = px.imshow(
             heatmap_data,
             labels=dict(x="Hora del Día", y="Día de la Semana", color="Cantidad de Respuestas"),
             x=heatmap_data.columns,
             y=heatmap_data.index,
             title="<b>MAPA DE CALOR DE RESPUESTAS</b>",
-            width=1000,
-            height=550
+            width=1350,
+            height=600,
+            color_continuous_scale=[(0, '#145CB3'), (1, 'white')] 
         )
-        
+
         fig.update_layout(
             title={
                 'text': '<b>MAPA DE CALOR DE RESPUESTAS</b><br><span style="font-size: 14px;">'
                         f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
                 'font': {
-                    'size': 24
+                    'size': 29
                 }
-            }
+            },
+            xaxis=dict(
+                title_font=dict(size=18),  
+                tickfont=dict(size=15)    
+            ),
+            yaxis=dict(
+                title_font=dict(size=18),  
+                tickfont=dict(size=15)     
+            )
         )
 
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
-        
+
         ###################################################### MAPA DE MEXICO ###################################################### 
         st.markdown("<h1 style='font-size: 26px; color: white; text-align: center;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)
 
