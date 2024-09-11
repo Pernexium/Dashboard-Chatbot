@@ -695,6 +695,7 @@ def main():
                     cargar_datos()
                     
                     st.experimental_rerun()
+                    st.stop()
                     return
                     
             st.warning("Contraseña incorrecta. Inténtalo de nuevo.")
