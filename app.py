@@ -1,3 +1,4 @@
+import io
 import toml
 import pytz
 import json
@@ -407,14 +408,6 @@ def graficas(df, df_conversations, nombre):
 
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
-        
-        ###################################################### TABLA DE FILTROS ###################################################### 
-        st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>TABLA DE FILTROS</h1>",unsafe_allow_html=True)
-        
-        st.write(df_conversations_filtered)
-        st.write(df_conversations_filtered.shape)
-        
-        st.markdown("<hr>", unsafe_allow_html=True)
 
         ###################################################### CANTIDAD DE RESPUESTAS ###################################################### 
         df_filtered['created_at'] = pd.to_datetime(df_filtered['created_at']).dt.tz_convert('UTC')
@@ -595,10 +588,116 @@ def graficas(df, df_conversations, nombre):
 
 
         ###################################################### MAPA DE MEXICO ###################################################### 
-        st.markdown("<h1 style='font-size: 26px; color: white; text-align: center;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)
+        st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>MAPA DE MÉXICO</h1>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        
+        ###################################################### TABLA DE FILTROS ###################################################### 
+        st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
+
+        fecha_actual = datetime.now()
+        anio_actual = fecha_actual.strftime("%Y")
+        mes_actual = fecha_actual.strftime("%m")
+
+        session = create_aws_session()
+        s3_client = session.client('s3')
+        bucket_name = 's3-pernexium-report'
+
+        if nombre == "BanCoppel":
+            prefix = f'master/bancoppel/reportes/chatbot/{anio_actual}_{mes_actual}/'
+        elif nombre == "Monte de Piedad":
+            prefix = f'master/monte/reportes/chatbot/{anio_actual}_{mes_actual}/'
+
+
+        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+
+        if 'Contents' in response:
+            xlsx_files = [
+                obj for obj in response['Contents'] if obj['Key'].endswith('.xlsx')
+            ]
+            xlsx_files = sorted(xlsx_files, key=lambda x: x['LastModified'], reverse=True)
+            latest_file = xlsx_files[0]['Key']
+            file_object = s3_client.get_object(Bucket=bucket_name, Key=latest_file)
+            file_content = file_object['Body'].read()
+            df_filtros = pd.read_excel(BytesIO(file_content))
+            columnas_a_eliminar = ['segmento','ultima_respuesta_cliente_trim', 'detonaciones_enviadas_trim','detonaciones_vistas_trim', 'detonaciones_entregadas_trim','detonaciones_fallidas_trim', 
+                                   'detonaciones_aceptadas_por_meta_trim','detonaciones_sin_estatus_trim', 'total_respuestas_trim','eficiencia_respuestas_trim', 'primera_detonacion_trim',
+                                   'ultima_detonacion_trim', 'ha_respondido_trim', 'status_trim','chatbot_ofrece_carta_convenio_trim', 'trim 7 a 8', 'trim 8 a 9',
+                                   'trim 9 a 10', 'trim 10 a 11', 'trim 11 a 12', 'trim 12 a 13', 'trim 13 a 14', 'trim 14 a 15', 'trim 15 a 16', 'trim 16 a 17',
+                                   'trim 17 a 18', 'trim 18 a 19', 'trim 19 a 20', 'trim 20 a 21','trim 21 a 22', 'ultima_hora_respuesta_cliente_trim',    'chatbot_ofrece_carta_convenio_periodo', 'periodo 7 a 8', 'periodo 8 a 9',
+                                   'periodo 9 a 10', 'periodo 10 a 11', 'periodo 11 a 12', 'periodo 12 a 13',
+                                   'periodo 13 a 14', 'periodo 14 a 15', 'periodo 15 a 16', 'periodo 16 a 17',
+                                   'periodo 17 a 18', 'periodo 18 a 19', 'periodo 19 a 20', 'periodo 20 a 21',
+                                   'periodo 21 a 22', 'ultima_hora_respuesta_cliente_periodo']
+            df_filtros.drop(columnas_a_eliminar, axis=1, inplace=True)
+        
+
+        columnas_filtrables = [
+            'credito', 
+            'detonaciones_enviadas_periodo', 
+            'detonaciones_vistas_periodo', 
+            'total_respuestas_periodo', 
+            'ultima_detonacion_periodo', 
+            'status_periodo'
+        ]
+
+        col1, col2 = st.columns(2)
+        columnas_seleccionadas = st.multiselect(
+            'Selecciona las columnas que deseas ver:',
+            df_filtros.columns.tolist(),
+            default=df_filtros.columns.tolist()
+        )
+
+        df_filtros_filtrado = df_filtros[columnas_seleccionadas]
+        mitad = len(columnas_filtrables) // 2
+        columnas_primera_mitad = columnas_filtrables[:mitad]
+        columnas_segunda_mitad = columnas_filtrables[mitad:]
+
+        with col1:
+            for columna in columnas_primera_mitad:
+                opciones = df_filtros[columna].unique()
+                seleccion = st.multiselect(f'Selecciona valores para la columna "{columna}":', opciones)
+                
+                if seleccion:
+                    df_filtros_filtrado = df_filtros_filtrado[df_filtros_filtrado[columna].isin(seleccion)]
+
+        with col2:
+            for columna in columnas_segunda_mitad:
+                opciones = df_filtros[columna].unique()
+                seleccion = st.multiselect(f'Selecciona valores para la columna "{columna}":', opciones)
+                
+                if seleccion:
+                    df_filtros_filtrado = df_filtros_filtrado[df_filtros_filtrado[columna].isin(seleccion)]
+
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.markdown("<h1 style='font-size: 35px; color: #145CB3; text-align: center;'>TABLA DE FILTROS</h1>", unsafe_allow_html=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
+        st.dataframe(df_filtros_filtrado.head(100))
+
+        def descargar_excel(df):
+            output = io.BytesIO()
+            with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                df.to_excel(writer, index=False, sheet_name='Datos Filtrados')
+            processed_data = output.getvalue()
+            return processed_data
+
+        if not df_filtros_filtrado.empty:
+            #st.write("Esta tabla tiene sus propios filtros, no son afectados por los filtros generales.")
+
+            excel_data = descargar_excel(df_filtros_filtrado)
+
+            st.download_button(
+                label=f"Descargar Tabla de Filtros de {nombre} en Excel",
+                data=excel_data,
+                file_name=f"Tabla_de_Filtros_{nombre}_Dashboard_Chatbot.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+        else:
+            st.write(f"No se encontraron archivos en el bucket con el prefijo {prefix} especificado.")
 
     else:
         st.error("Por favor, selecciona una fecha de inicio y una fecha de fin válidas.")
+        
+
 
 
     
