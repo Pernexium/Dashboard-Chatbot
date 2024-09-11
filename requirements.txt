@@ -3,5 +3,6 @@ tqdm
 boto3
 pandas
 plotly
+openpyxl
 matplotlib
 streamlit==1.32.0
