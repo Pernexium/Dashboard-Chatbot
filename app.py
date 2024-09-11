@@ -13,6 +13,7 @@ import pandas as pd
 from tqdm import tqdm
 from io import BytesIO
 import streamlit as st
+import geopandas as gpd
 import plotly.express as px
 from datetime import datetime
 import matplotlib.pyplot as plt
@@ -590,6 +591,7 @@ def graficas(df, df_conversations, nombre):
 
         ###################################################### MAPA DE MEXICO ###################################################### 
         st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>MAPA DE MÉXICO</h1>", unsafe_allow_html=True)
+       
         st.markdown("<hr>", unsafe_allow_html=True)
         
         ###################################################### TABLA DE FILTROS ###################################################### 
@@ -640,15 +642,19 @@ def graficas(df, df_conversations, nombre):
             'ultima_detonacion_periodo', 
             'status_periodo'
         ]
-
         col1, col2 = st.columns(2)
-        columnas_seleccionadas = st.multiselect(
-            'Selecciona las columnas que deseas ver:',
-            df_filtros.columns.tolist(),
-            default=df_filtros.columns.tolist()
-        )
 
-        df_filtros_filtrado = df_filtros[columnas_seleccionadas]
+        df_filtros_filtrado = df_filtros.copy()
+
+        if 'ultima_detonacion_periodo' in df_filtros_filtrado.columns:
+            df_filtros_filtrado['ultima_detonacion_periodo'] = pd.to_datetime(df_filtros_filtrado['ultima_detonacion_periodo']).dt.date
+        
+        if 'primera_detonacion_periodo' in df_filtros_filtrado.columns:
+            df_filtros_filtrado['primera_detonacion_periodo'] = pd.to_datetime(df_filtros_filtrado['primera_detonacion_periodo']).dt.date
+        
+        if 'ultima_respuesta_cliente_periodo' in df_filtros_filtrado.columns:
+            df_filtros_filtrado['ultima_respuesta_cliente_periodo'] = pd.to_datetime(df_filtros_filtrado['ultima_respuesta_cliente_periodo']).dt.date
+
         mitad = len(columnas_filtrables) // 2
         columnas_primera_mitad = columnas_filtrables[:mitad]
         columnas_segunda_mitad = columnas_filtrables[mitad:]
@@ -673,6 +679,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<h1 style='font-size: 35px; color: #145CB3; text-align: center;'>TABLA DE FILTROS</h1>", unsafe_allow_html=True)
         st.markdown("<hr>", unsafe_allow_html=True)
         st.dataframe(df_filtros_filtrado.head(100))
+
 
         def descargar_excel(df):
             output = io.BytesIO()
