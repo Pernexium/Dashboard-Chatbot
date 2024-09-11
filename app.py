@@ -258,12 +258,17 @@ def graficas(df, df_conversations, nombre):
             if (indexes_templates[index + 1] - indexes_templates[index]) > 2:
                 respuestas += 1
         
-        ###################################################### ENVIOS TOTALES ######################################################     
-        envios_totales = df_conversations_filtered.query("content.str.contains('Template')").role.value_counts().sum()
-        envios_totales_formateado = "{:,}".format(envios_totales)
+        ###################################################### ENVIOS TOTALES ######################################################   
+          
+        #envios_totales = df_conversations_filtered.query("content.str.contains('Template')").role.value_counts().sum()
+        filtered_data_2 = df_conversations_filtered.query("content.str.contains('Template')")
+        read_count_2 = filtered_data_2['sent_status_read'].sum() 
+        delivered_count_2 = filtered_data_2['sent_status_delivered'].sum() + read_count_2
+        envios_totales_2 = filtered_data_2['sent_status_sent'].sum() + read_count_2 + delivered_count_2
+        envios_totales_formateado = "{:,}".format(envios_totales_2)
 
         ###################################################### PORCENTAJE DE RESPUESTAS ###################################################### 
-        total_envios = df_conversations_filtered.query("content.str.contains('Template')").shape[0]
+        total_envios = envios_totales_2
         total_respuestas = df_conversations_filtered.query("direction == 'incoming'").shape[0]
 
         if total_envios > 0:
