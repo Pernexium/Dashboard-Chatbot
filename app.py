@@ -547,15 +547,16 @@ def graficas(df, df_conversations, nombre):
         heatmap_data = df_horas_dias_respuestas.pivot_table(index='Día de la Semana', columns='Hora del Día', aggfunc='size', fill_value=0)
 
         heatmap_data = heatmap_data.reindex(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"])
+
         fig = px.imshow(
             heatmap_data,
             labels=dict(x="Hora del Día", y="Día de la Semana", color="Cantidad de Respuestas"),
             x=heatmap_data.columns,
             y=heatmap_data.index,
             title="<b>MAPA DE CALOR DE RESPUESTAS</b>",
-            width=1350,
+            width=1250,
             height=600,
-            color_continuous_scale=[(0, '#145CB3'), (1, 'white')] 
+            color_continuous_scale=[(0, '#145CB3'), (1, 'white')]
         )
 
         fig.update_layout(
@@ -567,17 +568,26 @@ def graficas(df, df_conversations, nombre):
                 }
             },
             xaxis=dict(
-                title_font=dict(size=18),  
-                tickfont=dict(size=15)    
+                title_font=dict(size=18),
+                tickfont=dict(size=15)
             ),
             yaxis=dict(
-                title_font=dict(size=18),  
-                tickfont=dict(size=15)     
+                title_font=dict(size=18),
+                tickfont=dict(size=15)
+            ),
+            coloraxis_colorbar=dict(
+                title="Cantidad de Respuestas",
+                titleside="right",  
+                titlefont=dict(size=15),
+                tickfont=dict(size=12),
+                thickness=15,
+                len=0.75
             )
         )
 
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
+
 
         ###################################################### MAPA DE MEXICO ###################################################### 
         st.markdown("<h1 style='font-size: 26px; color: white; text-align: center;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)
