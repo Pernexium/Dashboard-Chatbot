@@ -4,5 +4,6 @@ boto3
 pandas
 plotly
 openpyxl
+xlsxwriter
 matplotlib
 streamlit==1.32.0
