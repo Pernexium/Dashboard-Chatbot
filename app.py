@@ -602,19 +602,9 @@ def graficas(df, df_conversations, nombre):
 
 def dashboard_page():
     if 'df_bancoppel' in st.session_state and st.session_state.df_bancoppel is not None:
-        if 'df_bancoppel_conversations' not in st.session_state or st.session_state.df_bancoppel_conversations is None:
-            st.error("Por favor, solicita los datos de conversaciones de Bancoppel primero en la página de 'Solicitar Datos' antes de acceder al Dashboard.")
-        else:
-            graficas(st.session_state.df_bancoppel, st.session_state.df_bancoppel_conversations, "BanCoppel")
-    
+        graficas(st.session_state.df_bancoppel, st.session_state.df_bancoppel_conversations, "BanCoppel")
     elif 'df_monte' in st.session_state and st.session_state.df_monte is not None:
-        if 'df_monte_conversations' not in st.session_state or st.session_state.df_monte_conversations is None:
-            st.error("Por favor, solicita los datos de conversaciones de Monte de Piedad primero en la página de 'Solicitar Datos' antes de acceder al Dashboard.")
-        else:
-            graficas(st.session_state.df_monte, st.session_state.df_monte_conversations, "Monte de Piedad")
-    
-    else:
-        st.error("Por favor, solicita los datos primero en la página de 'Solicitar Datos' antes de acceder al Dashboard.")
+        graficas(st.session_state.df_monte, st.session_state.df_monte_conversations, "Monte de Piedad")
 
 
 ######################################################################################################################        
@@ -665,7 +655,6 @@ def cargar_base_datos(rol):
    
 
 def main():
-    # st.sidebar.image("./Varios/Logos/logo.png", width=185)
     image_path = "./Varios/Logos/PXM Imagotipo 2.png"
     
     with open(image_path, "rb") as image_file:
@@ -676,7 +665,6 @@ def main():
     
     passwords, roles = load_secrets()
     
-    # Inicializa el estado de sesión si no está definido
     if 'authenticated' not in st.session_state:
         st.session_state['authenticated'] = False
         st.session_state['user_role'] = None
@@ -689,21 +677,19 @@ def main():
 
             for key, stored_hash in passwords.items():
                 if hashed_input == stored_hash:
-                    # Marca el estado de autenticación como verdadero
                     st.session_state['authenticated'] = True
                     st.session_state['user_role'] = roles[key]
                     st.success(f"¡Contraseña correcta! ¡Bienvenido al Dashboard del Chatbot de {roles[key]}!")
                     
-                    # Carga los datos después de autenticarse
-                    cargar_datos()
+                    cargar_base_datos(roles[key])
                     
-                    # Simula una recarga manual usando el estado de sesión en lugar de st.experimental_rerun()
-                    st.session_state['reload'] = True
-                    st.experimental_rerun()
+                    dashboard_page()
                     return
                     
-            st.warning("Contraseña incorrecta. Inténtalo de nuevo.")
-    else:
+            if not st.session_state['authenticated']:
+                st.warning("Contraseña incorrecta. Inténtalo de nuevo.")
+    
+    if st.session_state['authenticated']:
         dashboard_page()
 
 
