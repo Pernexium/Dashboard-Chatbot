@@ -13,7 +13,6 @@ import pandas as pd
 from tqdm import tqdm
 from io import BytesIO
 import streamlit as st
-import geopandas as gpd
 import plotly.express as px
 from datetime import datetime
 import matplotlib.pyplot as plt
