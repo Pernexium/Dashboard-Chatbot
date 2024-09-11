@@ -676,6 +676,7 @@ def main():
     
     passwords, roles = load_secrets()
     
+    # Inicializa el estado de sesión si no está definido
     if 'authenticated' not in st.session_state:
         st.session_state['authenticated'] = False
         st.session_state['user_role'] = None
@@ -688,18 +689,24 @@ def main():
 
             for key, stored_hash in passwords.items():
                 if hashed_input == stored_hash:
+                    # Marca el estado de autenticación como verdadero
                     st.session_state['authenticated'] = True
                     st.session_state['user_role'] = roles[key]
                     st.success(f"¡Contraseña correcta! ¡Bienvenido al Dashboard del Chatbot de {roles[key]}!")
                     
+                    # Carga los datos después de autenticarse
                     cargar_datos()
                     
-                    st.experimental_rerun
+                    # Simula una recarga manual usando el estado de sesión en lugar de st.experimental_rerun()
+                    st.session_state['reload'] = True
+                    st.experimental_rerun()
                     return
                     
             st.warning("Contraseña incorrecta. Inténtalo de nuevo.")
     else:
         dashboard_page()
+
+
 
 
     # st.sidebar.markdown("---")
