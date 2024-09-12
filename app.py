@@ -607,21 +607,19 @@ def graficas(df, df_conversations, nombre):
         df = pd.DataFrame(data)
         
         fig = px.choropleth(df, 
-                            geojson=mexico_geojson, 
-                            locations='Estado', 
-                            featureidkey="properties.name", 
-                            color='poblacion', 
-                            color_continuous_scale=[(0, '#145CB3'), (1, 'white')],  # Escala de color personalizada
-                            labels={'poblacion':'Población'},
-                            title='Población por Estado en México')
+                            geojson = mexico_geojson, 
+                            locations = 'Estado', 
+                            featureidkey = "properties.name", 
+                            color = 'poblacion', 
+                            color_continuous_scale = [(0, '#145CB3'), (1, 'white')],
+                            labels = {'poblacion':'Población'},
+                            title = 'Población por Estado en México')
 
-        fig.update_geos(fitbounds="locations", visible=False)
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1200, height=700)
-        st.plotly_chart(fig, use_container_width=True)
+        fig.update_geos(fitbounds = "locations", visible = False)
+        fig.update_layout(margin = {"r":0,"t":0,"l":0,"b":0}, width = 1200, height = 700)
+        st.plotly_chart(fig, use_container_width = True)
+        st.markdown("<hr>", unsafe_allow_html = True)
 
-        st.markdown("<hr>", unsafe_allow_html=True)
-
-        
         ###################################################### TABLA DE FILTROS ###################################################### 
         st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
 
