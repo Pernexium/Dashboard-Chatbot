@@ -589,36 +589,60 @@ def graficas(df, df_conversations, nombre):
 
 
         ###################################################### MAPA DE MEXICO ###################################################### 
-        st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>MAPA DE MÉXICO</h1>", unsafe_allow_html = True)
-        with open('./mexicoHigh.json', encoding = 'utf-8') as f:
+        st.markdown("<h1 style='font-size: 30px; color: black; text-align: left;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True) 
+        st.markdown("<h2 style='font-size: 18px; color: black; text-align: center;'>INTERACCIONES POR ESTADO</h2>",unsafe_allow_html=True) 
+        with open('./ladas.json', 'r', encoding='utf-8') as file:
+            ladas_dict = json.load(file)
+        lada_to_estado = {entry['lada']: entry['estado'] for entry in ladas_dict['mexico']}
+        
+        def obtener_estado_por_lada(telefono):
+            telefono = str(telefono)
+            if telefono.startswith('521'):
+                telefono = telefono[3:] 
+            for i in range(4, 2, -1):
+                lada = telefono[:i]
+                # print(f"Probando LADA: {lada}") 
+                if lada in lada_to_estado:
+                    # print(f"Encontrado LADA: {lada}, Estado: {lada_to_estado[lada]}")
+                    return lada_to_estado[lada]
+            
+            # print(f"LADA no encontrada para el teléfono: {telefono}")
+            return 'Desconocido'
+
+        df_conversations['Estado'] = df_conversations['phone1'].apply(obtener_estado_por_lada)
+        #st.write(df_conversations)
+        
+            ############################################################################################################        
+        
+        df_grouped = df_conversations.groupby('Estado').agg({ # direction, discount, tag, product
+            'sent_status_sent': 'sum',
+            'sent_status_delivered': 'sum',
+            'sent_status_failed': 'sum',
+            'sent_status_read': 'sum',
+            'sent_status_sin_estatus': 'sum',
+            'role': 'count'  
+        }).reset_index()
+
+
+        df_grouped['total_interacciones'] = df_grouped['role']
+
+        with open('./mexicoHigh.json', encoding='utf-8') as f:
             mexico_geojson = json.load(f)
 
-        data = {
-            'Estado': ['Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua', 
-                    'Ciudad de México', 'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 
-                    'Jalisco', 'México', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 
-                    'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 
-                    'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'],
-            'poblacion': [1434634, 3769020, 798447, 928363, 5543828, 3801487, 9209944, 3146771, 731391, 1832650, 6213799, 
-                        3533251, 3082841, 8348481, 17427790, 4825401, 1971520, 1284977, 5611512, 4132148, 6583278, 
-                        2279630, 1857985, 2822235, 3026943, 2944845, 2395272, 3650605, 1342977, 8112505, 2320894, 1622138]
-        }
+        fig = px.choropleth(df_grouped, 
+                            geojson=mexico_geojson, 
+                            locations='Estado', 
+                            featureidkey="properties.name", 
+                            color='total_interacciones', 
+                            color_continuous_scale=px.colors.sequential.Blues,
+                            labels={'total_interacciones': 'Interacciones'},
+                            title=' ')
 
-        df = pd.DataFrame(data)
-        
-        fig = px.choropleth(df, 
-                            geojson = mexico_geojson, 
-                            locations = 'Estado', 
-                            featureidkey = "properties.name", 
-                            color = 'poblacion', 
-                            color_continuous_scale = [(0, '#145CB3'), (1, 'white')],
-                            labels = {'poblacion':'Población'},
-                            title = 'Población por Estado en México')
+        fig.update_geos(fitbounds="locations", visible=False)
+        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1200, height=700)
 
-        fig.update_geos(fitbounds = "locations", visible = False)
-        fig.update_layout(margin = {"r":0,"t":0,"l":0,"b":0}, width = 1200, height = 700)
-        st.plotly_chart(fig, use_container_width = True)
-        st.markdown("<hr>", unsafe_allow_html = True)
+        st.plotly_chart(fig, use_container_width=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
 
         ###################################################### TABLA DE FILTROS ###################################################### 
         st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
