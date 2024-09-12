@@ -589,9 +589,38 @@ def graficas(df, df_conversations, nombre):
 
 
         ###################################################### MAPA DE MEXICO ###################################################### 
-        st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>MAPA DE MÉXICO</h1>", unsafe_allow_html=True)
-       
+        st.markdown("<h1 style='font-size: 29px; color: black; text-align: center;'>MAPA DE MÉXICO</h1>", unsafe_allow_html = True)
+        with open('./mexicoHigh.json', encoding = 'utf-8') as f:
+            mexico_geojson = json.load(f)
+
+        data = {
+            'Estado': ['Aguascalientes', 'Baja California', 'Baja California Sur', 'Campeche', 'Chiapas', 'Chihuahua', 
+                    'Ciudad de México', 'Coahuila', 'Colima', 'Durango', 'Guanajuato', 'Guerrero', 'Hidalgo', 
+                    'Jalisco', 'México', 'Michoacán', 'Morelos', 'Nayarit', 'Nuevo León', 'Oaxaca', 
+                    'Puebla', 'Querétaro', 'Quintana Roo', 'San Luis Potosí', 'Sinaloa', 'Sonora', 'Tabasco', 
+                    'Tamaulipas', 'Tlaxcala', 'Veracruz', 'Yucatán', 'Zacatecas'],
+            'poblacion': [1434634, 3769020, 798447, 928363, 5543828, 3801487, 9209944, 3146771, 731391, 1832650, 6213799, 
+                        3533251, 3082841, 8348481, 17427790, 4825401, 1971520, 1284977, 5611512, 4132148, 6583278, 
+                        2279630, 1857985, 2822235, 3026943, 2944845, 2395272, 3650605, 1342977, 8112505, 2320894, 1622138]
+        }
+
+        df = pd.DataFrame(data)
+        
+        fig = px.choropleth(df, 
+                            geojson=mexico_geojson, 
+                            locations='Estado', 
+                            featureidkey="properties.name", 
+                            color='poblacion', 
+                            color_continuous_scale=[(0, '#145CB3'), (1, 'white')],  # Escala de color personalizada
+                            labels={'poblacion':'Población'},
+                            title='Población por Estado en México')
+
+        fig.update_geos(fitbounds="locations", visible=False)
+        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1200, height=700)
+        st.plotly_chart(fig, use_container_width=True)
+
         st.markdown("<hr>", unsafe_allow_html=True)
+
         
         ###################################################### TABLA DE FILTROS ###################################################### 
         st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
