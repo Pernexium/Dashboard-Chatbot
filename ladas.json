@@ -1,0 +1,1484 @@
+{
+  "mexico": [
+    {
+      "estado": "Aguascalientes",
+      "lada": "449"
+    },
+    {
+      "estado": "Aguascalientes",
+      "lada": "465"
+    },
+    {
+      "estado": "Aguascalientes",
+      "lada": "458"
+    },
+    {
+      "estado": "Baja California",
+      "lada": "613"
+    },
+    {
+      "estado": "Baja California",
+      "lada": "661"
+    },
+    {
+      "estado": "Baja California",
+      "lada": "664"
+    },
+    {
+      "estado": "Baja California",
+      "lada": "663"
+    },
+    {
+      "estado": "Baja California",
+      "lada": "665"
+    },
+    {
+      "estado": "Baja California",
+      "lada": "686"
+    },
+    {
+      "estado": "Baja California Sur",
+      "lada": "612"
+    },
+    {
+      "estado": "Baja California Sur",
+      "lada": "613"
+    },
+    {
+      "estado": "Baja California Sur",
+      "lada": "615"
+    },
+    {
+      "estado": "Baja California Sur",
+      "lada": "624"
+    },
+    {
+      "estado": "Baja California Sur",
+      "lada": "646"
+    },
+    {
+      "estado": "Campeche",
+      "lada": "938"
+    },
+    {
+      "estado": "Campeche",
+      "lada": "981"
+    },
+    {
+      "estado": "Campeche",
+      "lada": "982"
+    },
+    {
+      "estado": "Campeche",
+      "lada": "983"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "916"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "918"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "932"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "934"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "961"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "965"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "962"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "963"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "966"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "967"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "992"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "964"
+    },
+    {
+      "estado": "Chiapas",
+      "lada": "994"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "614"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "621"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "625"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "626"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "627"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "636"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "639"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "648"
+    },
+    {
+      "estado": "Chihuahua",
+      "lada": "656"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "55"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "56"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "551"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "552"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "553"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "554"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "555"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "556"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "557"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "558"
+    },
+    {
+      "estado": "Ciudad de México",
+      "lada": "559"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "671"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "844"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "878"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "861"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "862"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "864"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "867"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "866"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "869"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "871"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "873"
+    },
+    {
+      "estado": "Coahuila",
+      "lada": "877"
+    },
+    {
+      "estado": "Colima",
+      "lada": "312"
+    },
+    {
+      "estado": "Colima",
+      "lada": "314"
+    },
+    {
+      "estado": "Durango",
+      "lada": "618"
+    },
+    {
+      "estado": "Durango",
+      "lada": "671"
+    },
+    {
+      "estado": "Durango",
+      "lada": "674"
+    },
+    {
+      "estado": "Durango",
+      "lada": "675"
+    },
+    {
+      "estado": "Durango",
+      "lada": "676"
+    },
+    {
+      "estado": "Durango",
+      "lada": "649"
+    },
+    {
+      "estado": "Durango",
+      "lada": "677"
+    },
+    {
+      "estado": "Durango",
+      "lada": "871"
+    },
+    {
+      "estado": "Durango",
+      "lada": "872"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "411"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "413"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "415"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "417"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "418"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "419"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "438"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "445"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "456"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "461"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "412"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "462"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "464"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "469"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "472"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "473"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "468"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "476"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "429"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "477"
+    },
+    {
+      "estado": "Guanajuato",
+      "lada": "479"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "741"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "733"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "727"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "736"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "742"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "755"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "744"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "745"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "732"
+    },
+    {
+      "estado": "Guerrero",
+      "lada": "747"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "427"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "441"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "736"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "738"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "743"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "824"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "746"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "748"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "761"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "763"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "771"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "772"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "773"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "774"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "775"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "789"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "791"
+    },
+    {
+      "estado": "Hidalgo",
+      "lada": "776"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "312"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "322"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "33"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "331"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "332"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "393"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "315"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "384"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "333"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "334"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "374"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "335"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "336"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "344"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "346"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "347"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "341"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "342"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "348"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "349"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "373"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "375"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "376"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "377"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "386"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "378"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "387"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "475"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "391"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "392"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "395"
+    },
+    {
+      "estado": "Jalisco",
+      "lada": "474"
+    },
+    {
+      "estado": "México",
+      "lada": "327"
+    },
+    {
+      "estado": "México",
+      "lada": "427"
+    },
+    {
+      "estado": "México",
+      "lada": "720"
+    },
+    {
+      "estado": "México",
+      "lada": "502"
+    },
+    {
+      "estado": "México",
+      "lada": "561"
+    },
+    {
+      "estado": "México",
+      "lada": "562"
+    },
+    {
+      "estado": "México",
+      "lada": "573"
+    },
+    {
+      "estado": "México",
+      "lada": "593"
+    },
+    {
+      "estado": "México",
+      "lada": "595"
+    },
+    {
+      "estado": "México",
+      "lada": "596"
+    },
+    {
+      "estado": "México",
+      "lada": "597"
+    },
+    {
+      "estado": "México",
+      "lada": "712"
+    },
+    {
+      "estado": "México",
+      "lada": "714"
+    },
+    {
+      "estado": "México",
+      "lada": "716"
+    },
+    {
+      "estado": "México",
+      "lada": "718"
+    },
+    {
+      "estado": "México",
+      "lada": "719"
+    },
+    {
+      "estado": "México",
+      "lada": "722"
+    },
+    {
+      "estado": "México",
+      "lada": "724"
+    },
+    {
+      "estado": "México",
+      "lada": "726"
+    },
+    {
+      "estado": "México",
+      "lada": "728"
+    },
+    {
+      "estado": "México",
+      "lada": "729"
+    },
+    {
+      "estado": "México",
+      "lada": "761"
+    },
+    {
+      "estado": "Michoacan",
+      "lada": "443"
+    },
+    {
+      "estado": "Michoacan",
+      "lada": "313"
+    },
+    {
+      "estado": "Michoacan",
+      "lada": "436"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "351"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "352"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "353"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "425"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "354"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "355"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "359"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "394"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "434"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "463"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "438"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "563"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "447"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "767"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "452"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "453"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "715"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "753"
+    },
+    {
+      "estado": "Michoacán",
+      "lada": "786"
+    },
+    {
+      "estado": "Morelos",
+      "lada": "735"
+    },
+    {
+      "estado": "Morelos",
+      "lada": "751"
+    },
+    {
+      "estado": "Morelos",
+      "lada": "769"
+    },
+    {
+      "estado": "Morelos",
+      "lada": "777"
+    },
+    {
+      "estado": "Morelos",
+      "lada": "734"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "311"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "323"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "323"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "324"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "327"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "329"
+    },
+    {
+      "estado": "Nayarit",
+      "lada": "389"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "81"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "811"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "812"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "813"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "814"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "828"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "817"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "818"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "488"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "826"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "829"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "867"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "873"
+    },
+    {
+      "estado": "Nuevo León",
+      "lada": "888"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "236"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "283"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "287"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "741"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "951"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "953"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "954"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "956"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "958"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "971"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "972"
+    },
+    {
+      "estado": "Oaxaca",
+      "lada": "994"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "221"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "222"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "224"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "227"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "231"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "232"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "233"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "238"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "249"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "243"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "244"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "249"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "276"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "275"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "282"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "746"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "764"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "797"
+    },
+    {
+      "estado": "Puebla",
+      "lada": "953"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "414"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "419"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "427"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "441"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "487"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "442"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "448"
+    },
+    {
+      "estado": "Querétaro",
+      "lada": "761"
+    },
+    {
+      "estado": "Quintana Roo",
+      "lada": "938"
+    },
+    {
+      "estado": "Quintana Roo",
+      "lada": "983"
+    },
+    {
+      "estado": "Quintana Roo",
+      "lada": "984"
+    },
+    {
+      "estado": "Quintana Roo",
+      "lada": "987"
+    },
+    {
+      "estado": "Quintana Roo",
+      "lada": "998"
+    },
+    {
+      "estado": "San Luis Potosi",
+      "lada": "444"
+    },
+    {
+      "estado": "San Luis Potosi",
+      "lada": "483"
+    },
+    {
+      "estado": "San Luis Potosi",
+      "lada": "489"
+    },
+    {
+      "estado": "San Luis Potosi",
+      "lada": "446"
+    },
+    {
+      "estado": "San Luis Potosí",
+      "lada": "481"
+    },
+    {
+      "estado": "San Luis Potosí",
+      "lada": "657"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "667"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "669"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "672"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "673"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "687"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "695"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "696"
+    },
+    {
+      "estado": "Sinaloa",
+      "lada": "688"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "619"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "622"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "631"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "633"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "653"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "637"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "642"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "644"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "647"
+    },
+    {
+      "estado": "Sonora",
+      "lada": "662"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "913"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "917"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "914"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "923"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "932"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "933"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "934"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "937"
+    },
+    {
+      "estado": "Tabasco",
+      "lada": "993"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "832"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "482"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "834"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "835"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "831"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "867"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "868"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "894"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "897"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "899"
+    },
+    {
+      "estado": "Tamaulipas",
+      "lada": "891"
+    },
+    {
+      "estado": "Tlaxcala",
+      "lada": "241"
+    },
+    {
+      "estado": "Tlaxcala",
+      "lada": "246"
+    },
+    {
+      "estado": "Tlaxcala",
+      "lada": "247"
+    },
+    {
+      "estado": "Tlaxcala",
+      "lada": "248"
+    },
+    {
+      "estado": "Tlaxcala",
+      "lada": "748"
+    },
+    {
+      "estado": "Tlaxcala",
+      "lada": "749"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "225"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "226"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "228"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "229"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "232"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "235"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "271"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "272"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "273"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "278"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "279"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "282"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "283"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "284"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "285"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "287"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "288"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "294"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "296"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "297"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "746"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "784"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "783"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "765"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "766"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "768"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "774"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "782"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "785"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "789"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "833"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "921"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "922"
+    },
+    {
+      "estado": "Veracruz",
+      "lada": "924"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "997"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "977"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "969"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "985"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "986"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "988"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "991"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "997"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "977"
+    },
+    {
+      "estado": "Yucatán",
+      "lada": "999"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "346"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "492"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "493"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "433"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "842"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "467"
+    },
+    {
+      "estado": "Zacatecas",
+      "lada": "498"
+    }
+  ]
+}
