@@ -594,14 +594,70 @@ def graficas(df, df_conversations, nombre):
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
 
-        ###################################################### DATOS PARA EL MAPA DE MEXICO Y TABLA DE FLITROS ###################################################### 
-        
+        ###################################################### CACHÉ PARA LA CARGA DE DATOS DEL MAPA DE MEXICO Y TABLA DE FILTROS ######################################################
+
+        @st.cache_data
+        def obtener_datos_s3(bucket_name, prefix):
+            session = create_aws_session()
+            s3_client = session.client('s3')
+            response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
+
+            if 'Contents' in response:
+                xlsx_files = [
+                    obj for obj in response['Contents'] if obj['Key'].endswith('.xlsx')
+                ]
+                xlsx_files = sorted(xlsx_files, key=lambda x: x['LastModified'], reverse=True)
+                latest_file = xlsx_files[0]['Key']
+                file_object = s3_client.get_object(Bucket=bucket_name, Key=latest_file)
+                file_content = file_object['Body'].read()
+                return pd.read_excel(BytesIO(file_content))
+
+            return pd.DataFrame()
+
+        ###################################################### PROCESAMIENTO INICIAL PARA EL MAPA DE MEXICO Y TABLA DE FILTROS ######################################################
+
+        @st.cache_data
+        def procesar_datos(df):
+            columnas_a_eliminar = ['segmento','ultima_respuesta_cliente_trim', 'detonaciones_enviadas_trim','detonaciones_vistas_trim', 'detonaciones_entregadas_trim','detonaciones_fallidas_trim', 
+                                'detonaciones_aceptadas_por_meta_trim','detonaciones_sin_estatus_trim', 'total_respuestas_trim','eficiencia_respuestas_trim', 'primera_detonacion_trim',
+                                'ultima_detonacion_trim', 'ha_respondido_trim', 'status_trim','chatbot_ofrece_carta_convenio_trim', 'trim 7 a 8', 'trim 8 a 9',
+                                'trim 9 a 10', 'trim 10 a 11', 'trim 11 a 12', 'trim 12 a 13', 'trim 13 a 14', 'trim 14 a 15', 'trim 15 a 16', 'trim 16 a 17',
+                                'trim 17 a 18', 'trim 18 a 19', 'trim 19 a 20', 'trim 20 a 21','trim 21 a 22', 'ultima_hora_respuesta_cliente_trim', 'chatbot_ofrece_carta_convenio_periodo', 
+                                'periodo 7 a 8', 'periodo 8 a 9', 'periodo 9 a 10', 'periodo 10 a 11', 'periodo 11 a 12', 'periodo 12 a 13',
+                                'periodo 13 a 14', 'periodo 14 a 15', 'periodo 15 a 16', 'periodo 16 a 17',
+                                'periodo 17 a 18', 'periodo 18 a 19', 'periodo 19 a 20', 'periodo 20 a 21',
+                                'periodo 21 a 22', 'ultima_hora_respuesta_cliente_periodo']
+            df.drop(columnas_a_eliminar, axis=1, inplace=True)
+            return df
+
+        ###################################################### CARGA Y CACHEO DEL GEOJSON PARA EL MAPA DE MEXICO ######################################################
+
+        @st.cache_data
+        def cargar_geojson():
+            with open('./mexicoHigh.json', encoding='utf-8') as f:
+                return json.load(f)
+
+        @st.cache_data
+        def cargar_ladas_json():
+            with open('./ladas.json', 'r', encoding='utf-8') as file:
+                return json.load(file)
+
+        ###################################################### FUNCIÓN PARA OBTENER ESTADO POR LADA PARA EL MAPA DE MEXICO ######################################################
+
+        def obtener_estado_por_lada(telefono, lada_to_estado):
+            telefono = str(telefono)
+            for i in range(4, 2, -1):
+                lada = telefono[:i]
+                if lada in lada_to_estado:
+                    return lada_to_estado[lada]
+            return 'Desconocido'
+
+        ###################################################### S3, FILTROS Y LADA ######################################################
+
         fecha_actual = datetime.now()
         anio_actual = fecha_actual.strftime("%Y")
         mes_actual = fecha_actual.strftime("%m")
 
-        session = create_aws_session()
-        s3_client = session.client('s3')
         bucket_name = 's3-pernexium-report'
 
         if nombre == "BanCoppel":
@@ -609,54 +665,18 @@ def graficas(df, df_conversations, nombre):
         elif nombre == "Monte de Piedad":
             prefix = f'master/monte/reportes/chatbot/{anio_actual}_{mes_actual}/'
 
+        df_filtros = obtener_datos_s3(bucket_name, prefix)
+        df_filtros = procesar_datos(df_filtros)
 
-        response = s3_client.list_objects_v2(Bucket=bucket_name, Prefix=prefix)
-
-        if 'Contents' in response:
-            xlsx_files = [
-                obj for obj in response['Contents'] if obj['Key'].endswith('.xlsx')
-            ]
-            xlsx_files = sorted(xlsx_files, key=lambda x: x['LastModified'], reverse=True)
-            latest_file = xlsx_files[0]['Key']
-            file_object = s3_client.get_object(Bucket=bucket_name, Key=latest_file)
-            file_content = file_object['Body'].read()
-            df_filtros = pd.read_excel(BytesIO(file_content))
-            columnas_a_eliminar = ['segmento','ultima_respuesta_cliente_trim', 'detonaciones_enviadas_trim','detonaciones_vistas_trim', 'detonaciones_entregadas_trim','detonaciones_fallidas_trim', 
-                                   'detonaciones_aceptadas_por_meta_trim','detonaciones_sin_estatus_trim', 'total_respuestas_trim','eficiencia_respuestas_trim', 'primera_detonacion_trim',
-                                   'ultima_detonacion_trim', 'ha_respondido_trim', 'status_trim','chatbot_ofrece_carta_convenio_trim', 'trim 7 a 8', 'trim 8 a 9',
-                                   'trim 9 a 10', 'trim 10 a 11', 'trim 11 a 12', 'trim 12 a 13', 'trim 13 a 14', 'trim 14 a 15', 'trim 15 a 16', 'trim 16 a 17',
-                                   'trim 17 a 18', 'trim 18 a 19', 'trim 19 a 20', 'trim 20 a 21','trim 21 a 22', 'ultima_hora_respuesta_cliente_trim',    'chatbot_ofrece_carta_convenio_periodo', 'periodo 7 a 8', 'periodo 8 a 9',
-                                   'periodo 9 a 10', 'periodo 10 a 11', 'periodo 11 a 12', 'periodo 12 a 13',
-                                   'periodo 13 a 14', 'periodo 14 a 15', 'periodo 15 a 16', 'periodo 16 a 17',
-                                   'periodo 17 a 18', 'periodo 18 a 19', 'periodo 19 a 20', 'periodo 20 a 21',
-                                   'periodo 21 a 22', 'ultima_hora_respuesta_cliente_periodo']
-            df_filtros.drop(columnas_a_eliminar, axis=1, inplace=True)
-
-        ###################################################### LADAS PARA EL MAPA DE MEXICO ###################################################### 
-
-        with open('./ladas.json', 'r', encoding='utf-8') as file:
-            ladas_dict = json.load(file)
-
+        ladas_dict = cargar_ladas_json()
         lada_to_estado = {entry['lada']: entry['estado'] for entry in ladas_dict['mexico']}
+        mexico_geojson = cargar_geojson()
 
-        def obtener_estado_por_lada(telefono):
-            telefono = str(telefono)
-            for i in range(4, 2, -1):
-                lada = telefono[:i]
-                #print(f"Probando LADA: {lada}")
-                if lada in lada_to_estado:
-                    #print(f"Encontrado LADA: {lada}, Estado: {lada_to_estado[lada]}")
-                    return lada_to_estado[lada]
-            
-            #print(f"LADA no encontrada para el teléfono: {telefono}")
-            return 'Desconocido'
+        df_filtros['Estado'] = df_filtros['telefono_contactado'].apply(lambda x: obtener_estado_por_lada(x, lada_to_estado))
 
+        ###################################################### MAPA DE MÉXICO ######################################################
 
-        df_filtros['Estado'] = df_filtros['telefono_contactado'].apply(obtener_estado_por_lada)
-        
-        ###################################################### MAPA DE MEXICO ######################################################       
-        
-        st.markdown("<h1 style='font-size: 30px; color: black; text-align: left;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)         
+        st.markdown("<h1 style='font-size: 30px; color: black; text-align: left;'>MAPA DE MÉXICO</h1>", unsafe_allow_html=True)
 
         df_grouped = df_filtros.groupby('Estado').agg({
             'detonaciones_enviadas_periodo': 'sum',  # Suma total de mensajes enviados por estado
@@ -673,9 +693,7 @@ def graficas(df, df_conversations, nombre):
         # Combinar las cuentas de status con el dataframe agrupado
         df_grouped = df_grouped.merge(status_count, on='Estado')
 
-        with open('./mexicoHigh.json', encoding='utf-8') as f:
-            mexico_geojson = json.load(f)
-
+        # Opciones del mapa
         opciones_mapa = ['porcentaje_respuestas', 'detonaciones_enviadas_periodo'] + list(status_count.columns)
         opcion_seleccionada = st.selectbox(
             'Estadística a mostrar en el mapa:',
@@ -684,6 +702,7 @@ def graficas(df, df_conversations, nombre):
                                 'detonaciones_enviadas_periodo': 'Mensajes Enviados'}.get(x, x) 
         )
 
+        # Hover data para diferentes opciones
         if opcion_seleccionada == 'porcentaje_respuestas':
             hover_data = {
                 'porcentaje_respuestas': ':.2f',          # % de respuestas
@@ -717,10 +736,10 @@ def graficas(df, df_conversations, nombre):
         st.plotly_chart(fig, use_container_width=True)
         st.markdown("<hr>", unsafe_allow_html=True)
 
-        ###################################################### TABLA DE FILTROS ###################################################### 
-        
+        ###################################################### TABLA DE FILTROS ######################################################
+
         st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
-        
+
         columnas_filtrables = [
             'credito', 
             'detonaciones_enviadas_periodo', 
@@ -735,10 +754,10 @@ def graficas(df, df_conversations, nombre):
 
         if 'ultima_detonacion_periodo' in df_filtros_filtrado.columns:
             df_filtros_filtrado['ultima_detonacion_periodo'] = pd.to_datetime(df_filtros_filtrado['ultima_detonacion_periodo']).dt.date
-        
+
         if 'primera_detonacion_periodo' in df_filtros_filtrado.columns:
             df_filtros_filtrado['primera_detonacion_periodo'] = pd.to_datetime(df_filtros_filtrado['primera_detonacion_periodo']).dt.date
-        
+
         if 'ultima_respuesta_cliente_periodo' in df_filtros_filtrado.columns:
             df_filtros_filtrado['ultima_respuesta_cliente_periodo'] = pd.to_datetime(df_filtros_filtrado['ultima_respuesta_cliente_periodo']).dt.date
 
@@ -767,6 +786,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
         st.dataframe(df_filtros_filtrado.head(100))
 
+        ###################################################### DESCARGAR EXCEL DE TABLA DE FILTROS ######################################################
 
         def descargar_excel(df):
             output = io.BytesIO()
@@ -776,8 +796,6 @@ def graficas(df, df_conversations, nombre):
             return processed_data
 
         if not df_filtros_filtrado.empty:
-            #st.write("Esta tabla tiene sus propios filtros, no son afectados por los filtros generales.")
-
             excel_data = descargar_excel(df_filtros_filtrado)
 
             st.download_button(
@@ -788,9 +806,6 @@ def graficas(df, df_conversations, nombre):
             )
         else:
             st.write(f"No se encontraron archivos en el bucket con el prefijo {prefix} especificado.")
-
-    else:
-        st.error("Por favor, selecciona una fecha de inicio y una fecha de fin válidas.")
         
     
 ######################################################################################################################    
