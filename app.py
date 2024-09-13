@@ -588,65 +588,8 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
 
 
-        ###################################################### MAPA DE MEXICO ###################################################### 
-        st.markdown("<h1 style='font-size: 30px; color: black; text-align: left;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True) 
-        st.markdown("<h2 style='font-size: 18px; color: black; text-align: center;'>INTERACCIONES POR ESTADO</h2>",unsafe_allow_html=True) 
-        with open('./ladas.json', 'r', encoding='utf-8') as file:
-            ladas_dict = json.load(file)
-        lada_to_estado = {entry['lada']: entry['estado'] for entry in ladas_dict['mexico']}
+        ###################################################### DATOS PARA EL MAPA DE MEXICO ###################################################### 
         
-        def obtener_estado_por_lada(telefono):
-            telefono = str(telefono)
-            if telefono.startswith('521'):
-                telefono = telefono[3:] 
-            for i in range(4, 2, -1):
-                lada = telefono[:i]
-                # print(f"Probando LADA: {lada}") 
-                if lada in lada_to_estado:
-                    # print(f"Encontrado LADA: {lada}, Estado: {lada_to_estado[lada]}")
-                    return lada_to_estado[lada]
-            
-            # print(f"LADA no encontrada para el teléfono: {telefono}")
-            return 'Desconocido'
-
-        df_conversations['Estado'] = df_conversations['phone1'].apply(obtener_estado_por_lada)
-        #st.write(df_conversations)
-        
-            ############################################################################################################        
-        
-        df_grouped = df_conversations.groupby('Estado').agg({ # direction, discount, tag, product
-            'sent_status_sent': 'sum',
-            'sent_status_delivered': 'sum',
-            'sent_status_failed': 'sum',
-            'sent_status_read': 'sum',
-            'sent_status_sin_estatus': 'sum',
-            'role': 'count'  
-        }).reset_index()
-
-
-        df_grouped['total_interacciones'] = df_grouped['role']
-
-        with open('./mexicoHigh.json', encoding='utf-8') as f:
-            mexico_geojson = json.load(f)
-
-        fig = px.choropleth(df_grouped, 
-                            geojson=mexico_geojson, 
-                            locations='Estado', 
-                            featureidkey="properties.name", 
-                            color='total_interacciones', 
-                            color_continuous_scale=px.colors.sequential.Blues,
-                            labels={'total_interacciones': 'Interacciones'},
-                            title=' ')
-
-        fig.update_geos(fitbounds="locations", visible=False)
-        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1200, height=700)
-
-        st.plotly_chart(fig, use_container_width=True)
-        st.markdown("<hr>", unsafe_allow_html=True)
-
-        ###################################################### TABLA DE FILTROS ###################################################### 
-        st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
-
         fecha_actual = datetime.now()
         anio_actual = fecha_actual.strftime("%Y")
         mes_actual = fecha_actual.strftime("%m")
@@ -682,8 +625,94 @@ def graficas(df, df_conversations, nombre):
                                    'periodo 17 a 18', 'periodo 18 a 19', 'periodo 19 a 20', 'periodo 20 a 21',
                                    'periodo 21 a 22', 'ultima_hora_respuesta_cliente_periodo']
             df_filtros.drop(columnas_a_eliminar, axis=1, inplace=True)
-        
 
+        ###################################################### LADAS PARA EL MAPA DE MEXICO ###################################################### 
+
+        with open('./ladas.json', 'r', encoding='utf-8') as file:
+            ladas_dict = json.load(file)
+
+        lada_to_estado = {entry['lada']: entry['estado'] for entry in ladas_dict['mexico']}
+
+        def obtener_estado_por_lada(telefono):
+            telefono = str(telefono)
+            for i in range(4, 2, -1):
+                lada = telefono[:i]
+                print(f"Probando LADA: {lada}") 
+                if lada in lada_to_estado:
+                    print(f"Encontrado LADA: {lada}, Estado: {lada_to_estado[lada]}")
+                    return lada_to_estado[lada]
+            
+            print(f"LADA no encontrada para el teléfono: {telefono}")
+            return 'Desconocido'
+
+
+        df_filtros['Estado'] = df_filtros['telefono_contactado'].apply(obtener_estado_por_lada)
+        
+        ###################################################### MAPA DE MEXICO ######################################################       
+        st.markdown("<h1 style='font-size: 30px; color: black; text-align: left;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)         
+
+        df_grouped = df_filtros.groupby('Estado').agg({
+            'detonaciones_enviadas_periodo': 'sum',  # Suma total de mensajes enviados por estado
+            'total_respuestas_periodo': 'sum'        # Suma total de respuestas por estado
+        }).reset_index()
+
+        # Cálculo del % de respuestas por estado
+        df_grouped['porcentaje_respuestas'] = (df_grouped['total_respuestas_periodo'] / 
+                                                df_grouped['detonaciones_enviadas_periodo']) * 100
+
+        # Obtener la cuenta de cada tipo de status por estado utilizando crosstab
+        status_count = pd.crosstab(df_filtros['Estado'], df_filtros['status_periodo'])
+
+        # Combinar las cuentas de status con el dataframe agrupado
+        df_grouped = df_grouped.merge(status_count, on='Estado')
+
+        with open('./mexicoHigh.json', encoding='utf-8') as f:
+            mexico_geojson = json.load(f)
+
+        opciones_mapa = ['porcentaje_respuestas', 'detonaciones_enviadas_periodo'] + list(status_count.columns)
+        opcion_seleccionada = st.selectbox(
+            'Estadística a mostrar en el mapa:',
+            opciones_mapa,
+            format_func=lambda x: {'porcentaje_respuestas': 'Porcentaje de Respuestas', 
+                                'detonaciones_enviadas_periodo': 'Mensajes Enviados'}.get(x, x) 
+        )
+
+        if opcion_seleccionada == 'porcentaje_respuestas':
+            hover_data = {
+                'porcentaje_respuestas': ':.2f',          # % de respuestas
+                'total_respuestas_periodo': ':.0f',       # Total de respuestas
+                'detonaciones_enviadas_periodo': ':.0f'   # Total de mensajes enviados
+            }
+        elif opcion_seleccionada == 'detonaciones_enviadas_periodo':
+            hover_data = {
+                'detonaciones_enviadas_periodo': ':.0f',  # Total de mensajes enviados
+                'total_respuestas_periodo': ':.0f',       # Total de respuestas
+                'porcentaje_respuestas': ':.2f'           # % de respuestas
+            }
+        else:
+            hover_data = {
+                opcion_seleccionada: ':.0f'
+            }
+
+        fig = px.choropleth(df_grouped, 
+                            geojson=mexico_geojson, 
+                            locations='Estado', 
+                            featureidkey="properties.name", 
+                            color=opcion_seleccionada,
+                            color_continuous_scale=px.colors.sequential.Blues,
+                            labels={opcion_seleccionada: {'porcentaje_respuestas': 'Porcentaje de Respuestas', 
+                                                        'detonaciones_enviadas_periodo': 'Mensajes Enviados'}.get(opcion_seleccionada, opcion_seleccionada)},
+                            hover_name='Estado', 
+                            hover_data=hover_data)
+
+        fig.update_geos(fitbounds="locations", visible=False)
+        fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0}, width=1200, height=700)
+        st.plotly_chart(fig, use_container_width=True)
+        st.markdown("<hr>", unsafe_allow_html=True)
+
+        ###################################################### TABLA DE FILTROS ###################################################### 
+        st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
+        
         columnas_filtrables = [
             'credito', 
             'detonaciones_enviadas_periodo', 
