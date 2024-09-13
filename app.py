@@ -25,6 +25,7 @@ warnings.filterwarnings("ignore")
 
 ######################################################################################################################
 
+
 st.set_page_config(page_title = "Pernexium", page_icon = "./Varios/Logos/PXM isotipo 3.png", layout = "wide")
 
 
@@ -72,6 +73,7 @@ def create_aws_session():
         region_name=aws_region
     )
     return session
+
 
 ######################################################################################################################
 
@@ -270,6 +272,7 @@ def graficas(df, df_conversations, nombre):
         envios_totales_formateado = "{:,}".format(envios_totales_2)
 
         ###################################################### PORCENTAJE DE RESPUESTAS ###################################################### 
+        
         total_envios = envios_totales_2
         total_respuestas = df_conversations_filtered.query("direction == 'incoming'").shape[0]
 
@@ -281,6 +284,7 @@ def graficas(df, df_conversations, nombre):
         porcentaje_respuestas_str = f"{porcentaje_respuestas}%"
 
         ###################################################### GASTOS DE META ###################################################### 
+        
         def obtener_tipo_cambio():
             try:
                 response = requests.get("https://api.exchangerate-api.com/v4/latest/USD")
@@ -368,6 +372,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
         
         ###################################################### FUNEL DE ENVIOS ###################################################### 
+        
         filtered_data = df_conversations_filtered.query("content.str.contains('Template')")
 
         response_count = total_respuestas
@@ -411,6 +416,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
 
         ###################################################### CANTIDAD DE RESPUESTAS ###################################################### 
+        
         df_filtered['created_at'] = pd.to_datetime(df_filtered['created_at']).dt.tz_convert('UTC')
         dias_respuestas = []
         for _, row in df_filtered.iterrows():
@@ -506,6 +512,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
         
         ###################################################### MAPA DE CALOR DE RESPUESTAS ###################################################### 
+        
         horas_dias_respuestas = []
         timezone_cdmx = pytz.timezone('America/Mexico_City')
 
@@ -587,8 +594,7 @@ def graficas(df, df_conversations, nombre):
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
 
-
-        ###################################################### DATOS PARA EL MAPA DE MEXICO ###################################################### 
+        ###################################################### DATOS PARA EL MAPA DE MEXICO Y TABLA DE FLITROS ###################################################### 
         
         fecha_actual = datetime.now()
         anio_actual = fecha_actual.strftime("%Y")
@@ -649,6 +655,7 @@ def graficas(df, df_conversations, nombre):
         df_filtros['Estado'] = df_filtros['telefono_contactado'].apply(obtener_estado_por_lada)
         
         ###################################################### MAPA DE MEXICO ######################################################       
+        
         st.markdown("<h1 style='font-size: 30px; color: black; text-align: left;'>MAPA DE MÉXICO</h1>",unsafe_allow_html=True)         
 
         df_grouped = df_filtros.groupby('Estado').agg({
@@ -711,6 +718,7 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
 
         ###################################################### TABLA DE FILTROS ###################################################### 
+        
         st.markdown("<h1 style='font-size: 26px; color: black; text-align: left;'>FILTROS PARA LA TABLA DE FILTROS</h1>",unsafe_allow_html=True) 
         
         columnas_filtrables = [
@@ -784,9 +792,6 @@ def graficas(df, df_conversations, nombre):
     else:
         st.error("Por favor, selecciona una fecha de inicio y una fecha de fin válidas.")
         
-
-
-
     
 ######################################################################################################################    
 
@@ -882,9 +887,6 @@ def main():
     
     if st.session_state['authenticated']:
         dashboard_page()
-
-
-
 
     # st.sidebar.markdown("---")
 
