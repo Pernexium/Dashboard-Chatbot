@@ -643,12 +643,12 @@ def graficas(df, df_conversations, nombre):
             telefono = str(telefono)
             for i in range(4, 2, -1):
                 lada = telefono[:i]
-                print(f"Probando LADA: {lada}") 
+                #print(f"Probando LADA: {lada}")
                 if lada in lada_to_estado:
-                    print(f"Encontrado LADA: {lada}, Estado: {lada_to_estado[lada]}")
+                    #print(f"Encontrado LADA: {lada}, Estado: {lada_to_estado[lada]}")
                     return lada_to_estado[lada]
             
-            print(f"LADA no encontrada para el teléfono: {telefono}")
+            #print(f"LADA no encontrada para el teléfono: {telefono}")
             return 'Desconocido'
 
 
