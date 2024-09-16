@@ -8,6 +8,7 @@ import random
 import hashlib
 import requests
 import datetime
+import itertools
 import numpy as np
 import pandas as pd
 from tqdm import tqdm
@@ -416,8 +417,9 @@ def graficas(df, df_conversations, nombre):
         st.markdown("<hr>", unsafe_allow_html=True)
 
         ###################################################### CANTIDAD DE RESPUESTAS ###################################################### 
-        
-        df_filtered['created_at'] = pd.to_datetime(df_filtered['created_at']).dt.tz_convert('UTC')
+
+        timezone_cdmx = pytz.timezone('America/Mexico_City')
+
         dias_respuestas = []
         for _, row in df_filtered.iterrows():
             try:
@@ -427,17 +429,18 @@ def graficas(df, df_conversations, nombre):
                     messages = row['messages']
                 else:
                     continue 
-                
+
                 for message in messages:
                     if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
                         created_at = message.get('createdAt')
                         if created_at:
-                            adjusted_time = pd.to_datetime(created_at) - pd.Timedelta(hours=6)
-                            day_of_week = adjusted_time.day_name()
+                            dt = pd.to_datetime(created_at, utc=True)
+                            dt_cdmx = dt.astimezone(timezone_cdmx)
+                            day_of_week = dt_cdmx.strftime('%A')
                             dias_respuestas.append(day_of_week)
-
-            except (json.JSONDecodeError, TypeError) as e:
+            except Exception as e:
                 print(f"Error al procesar la fila: {e}")
+        #print(f"Número total de respuestas procesadas: {len(dias_respuestas)}")
 
         dias_semana_espanol = {
             "Monday": "Lunes",
@@ -449,7 +452,7 @@ def graficas(df, df_conversations, nombre):
             "Sunday": "Domingo"
         }
 
-        dias_respuestas_espanol = [dias_semana_espanol[day] for day in dias_respuestas]
+        dias_respuestas_espanol = [dias_semana_espanol.get(day, day) for day in dias_respuestas]
 
         df_dias_respuestas = pd.DataFrame(dias_respuestas_espanol, columns=['Día de la Semana'])
 
@@ -479,7 +482,8 @@ def graficas(df, df_conversations, nombre):
 
         fig.update_layout(
             title={
-                'text': '<b>CANTIDAD DE RESPUESTAS</b><br><span style="font-size: 14px;">'f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
+                'text': '<b>CANTIDAD DE RESPUESTAS</b><br><span style="font-size: 14px;">'
+                        f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
                 'font': {
                     'size': 29
                 }
@@ -510,11 +514,10 @@ def graficas(df, df_conversations, nombre):
 
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
-        
-        ###################################################### MAPA DE CALOR DE RESPUESTAS ###################################################### 
-        
+
+        ###################################################### MAPA DE CALOR DE RESPUESTAS ######################################################
+
         horas_dias_respuestas = []
-        timezone_cdmx = pytz.timezone('America/Mexico_City')
 
         for _, row in df_filtered.iterrows():
             try:
@@ -524,19 +527,20 @@ def graficas(df, df_conversations, nombre):
                     messages = row['messages']
                 else:
                     continue 
-                
+
                 for message in messages:
                     if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
                         created_at = message.get('createdAt')
                         if created_at:
-                            dt = pd.to_datetime(created_at).tz_convert('UTC') 
-                            dt_cdmx = dt.tz_convert(timezone_cdmx)  
+                            dt = pd.to_datetime(created_at, utc=True)
+                            dt_cdmx = dt.astimezone(timezone_cdmx)
                             day_of_week = dt_cdmx.strftime('%A')
                             hour_of_day = dt_cdmx.hour
                             horas_dias_respuestas.append((day_of_week, hour_of_day))
-
-            except (json.JSONDecodeError, TypeError) as e:
+            except Exception as e:
                 print(f"Error al procesar la fila: {e}")
+
+        #print(f"Número total de respuestas procesadas en el mapa de calor: {len(horas_dias_respuestas)}")
 
         df_horas_dias_respuestas = pd.DataFrame(horas_dias_respuestas, columns=['Día de la Semana', 'Hora del Día'])
 
@@ -550,8 +554,13 @@ def graficas(df, df_conversations, nombre):
             'Sunday': 'Domingo'
         })
 
-        heatmap_data = df_horas_dias_respuestas.pivot_table(index='Día de la Semana', columns='Hora del Día', aggfunc='size', fill_value=0)
+        todos_los_dias = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+        todas_las_horas = list(range(24))
 
+        combinaciones = pd.DataFrame(list(itertools.product(todos_los_dias, todas_las_horas)), columns=['Día de la Semana', 'Hora del Día'])
+        conteo_respuestas_horas = df_horas_dias_respuestas.groupby(['Día de la Semana', 'Hora del Día']).size().reset_index(name='Cantidad de Respuestas')
+        df_completo = combinaciones.merge(conteo_respuestas_horas, on=['Día de la Semana', 'Hora del Día'], how='left').fillna(0)
+        heatmap_data = df_completo.pivot_table(index='Día de la Semana', columns='Hora del Día', values='Cantidad de Respuestas', fill_value=0)
         heatmap_data = heatmap_data.reindex(["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"])
 
         fig = px.imshow(
@@ -562,7 +571,7 @@ def graficas(df, df_conversations, nombre):
             title="<b>MAPA DE CALOR DE RESPUESTAS</b>",
             width=1300,
             height=600,
-            color_continuous_scale=[(0, '#145CB3'), (1, 'white')]
+            color_continuous_scale='Blues'
         )
 
         fig.update_layout(
