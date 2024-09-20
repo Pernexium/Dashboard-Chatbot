@@ -415,12 +415,14 @@ def graficas(df, df_conversations, nombre):
 
         st.plotly_chart(fig)
         st.markdown("<hr>", unsafe_allow_html=True)
-
-        ###################################################### CANTIDAD DE RESPUESTAS ###################################################### 
+        
+        ###################################################### CANTIDAD DE RESPUESTAS (EN PORCENTAJE) ###################################################### 
 
         timezone_cdmx = pytz.timezone('America/Mexico_City')
 
         dias_respuestas = []
+        dias_envios = []
+
         for _, row in df_filtered.iterrows():
             try:
                 if isinstance(row['messages'], str):
@@ -431,16 +433,19 @@ def graficas(df, df_conversations, nombre):
                     continue 
 
                 for message in messages:
-                    if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
-                        created_at = message.get('createdAt')
-                        if created_at:
-                            dt = pd.to_datetime(created_at, utc=True)
-                            dt_cdmx = dt.astimezone(timezone_cdmx)
-                            day_of_week = dt_cdmx.strftime('%A')
+                    created_at = message.get('createdAt')
+                    if created_at:
+                        dt = pd.to_datetime(created_at, utc=True)
+                        dt_cdmx = dt.astimezone(timezone_cdmx)
+                        day_of_week = dt_cdmx.strftime('%A')
+                        
+                        if message.get('role') != 'assistant' and message.get('direction') == 'incoming':
                             dias_respuestas.append(day_of_week)
+                        
+                        dias_envios.append(day_of_week)
+                        
             except Exception as e:
                 print(f"Error al procesar la fila: {e}")
-        #print(f"Número total de respuestas procesadas: {len(dias_respuestas)}")
 
         dias_semana_espanol = {
             "Monday": "Lunes",
@@ -453,21 +458,29 @@ def graficas(df, df_conversations, nombre):
         }
 
         dias_respuestas_espanol = [dias_semana_espanol.get(day, day) for day in dias_respuestas]
+        dias_envios_espanol = [dias_semana_espanol.get(day, day) for day in dias_envios]
 
         df_dias_respuestas = pd.DataFrame(dias_respuestas_espanol, columns=['Día de la Semana'])
+        df_dias_envios = pd.DataFrame(dias_envios_espanol, columns=['Día de la Semana'])
 
         conteo_respuestas = df_dias_respuestas['Día de la Semana'].value_counts().reindex(
             ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"], fill_value=0)
 
+        conteo_envios = df_dias_envios['Día de la Semana'].value_counts().reindex(
+            ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"], fill_value=0)
+
+        porcentaje_respuestas_dia = (conteo_respuestas / conteo_envios) * 100
+        porcentaje_respuestas_dia = porcentaje_respuestas_dia.fillna(0)  
+
         fig = px.bar(
-            conteo_respuestas, 
-            x=conteo_respuestas.index, 
-            y=conteo_respuestas.values,
-            labels={'x': 'Día de la Semana', 'y': 'Cantidad de Respuestas'},
-            title='<b>CANTIDAD DE RESPUESTAS</b>',
+            porcentaje_respuestas_dia, 
+            x=porcentaje_respuestas_dia.index, 
+            y=porcentaje_respuestas_dia.values,
+            labels={'x': 'Día de la Semana', 'y': 'Porcentaje de Respuestas (%)'},
+            title='<b>PORCENTAJE DE RESPUESTAS POR DÍA</b>',
             width=1300, 
             height=550,
-            text=conteo_respuestas.values
+            text=porcentaje_respuestas_dia.apply(lambda x: f'{x:.2f}%').values  
         )
 
         fig.update_traces(
@@ -477,12 +490,19 @@ def graficas(df, df_conversations, nombre):
             textposition='outside',  
             textfont=dict(
                 size=14  
-            )
+            ),
+            hovertemplate=
+            '<b>%{x}</b><br>' +  # Día de la semana
+            'Total de mensajes: %{customdata[0]:,.0f}<br>' +  # Total de envíos
+            'Total de respuestas: %{customdata[1]:,.0f}<br>' +  # Total de respuestas
+            'Porcentaje de respuestas: %{y:.2f}%<extra></extra>'  # Porcentaje con dos decimales
         )
+
+        fig.update_traces(customdata=np.stack([conteo_envios.values, conteo_respuestas.values], axis=-1))
 
         fig.update_layout(
             title={
-                'text': '<b>CANTIDAD DE RESPUESTAS</b><br><span style="font-size: 14px;">'
+                'text': '<b>PORCENTAJE DE RESPUESTAS POR DÍA</b><br><span style="font-size: 14px;">'
                         f'{fecha_inicio.strftime("%d/%m/%Y")} - {fecha_fin.strftime("%d/%m/%Y")}</span>',
                 'font': {
                     'size': 29
